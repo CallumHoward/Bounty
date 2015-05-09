@@ -4,14 +4,7 @@
 # COMP3411 - Assignment 3
 # Chris Phibbs and Callum Howard 2015
 
-turnNum = 0
-isInBoat = False
-numDynamite = 0
-hasAxe = False
-hasGold = False
-
 class GameState:
-
     # Constructor method for GameState class
     def __init__(self):
         self.turnNum = 0
@@ -19,10 +12,44 @@ class GameState:
         self.numDynamite = 0
         self.hasAxe = False
         self.hasGold = False
-        self.board = [][]
+        self.board = Board()
 
+    ### getters
+    def getTurn(self):
+        return self.turnNum
+
+    def isInBoat(self):
+        return self.isInBoat
+
+    def getNumDynamite(self):
+        return self.numDynamite
+
+    def hasAxe(self):
+        return self.hasAxe
+
+    def hasGold(self):
+        return self.hasGold
+
+    ### setters
+    def nextTurn(self):
+        self.turnNum += 1
+
+
+class Board:
+    def __init__(self):
+        # board is a list of lists
+        self.board = []
         for i in range(0, 160):
+            rows = []
             for j in range(0, 160):
-                self.board.append(-1)
+                rows.append(-1)
+            self.board.append(rows)
+
+    def interpretString(self):
+        return
+
+    # returns a list of tuples containing coordinates
+    def shortestPath(self, (x1, y1), (x2, y2)):
+        return
 
 
