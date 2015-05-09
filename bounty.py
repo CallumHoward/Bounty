@@ -34,6 +34,10 @@ class GameState:
     def nextTurn(self):
         self.turnNum += 1
 
+    ### other methods
+    def printBoard(self):
+        self.board.printBoard()
+
 
 class Board:
     def __init__(self):
@@ -52,4 +56,7 @@ class Board:
     def shortestPath(self, (x1, y1), (x2, y2)):
         return
 
+    def printBoard(self):
+        for i in self.board:
+            print "".join(i)
 
