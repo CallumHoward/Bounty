@@ -6,7 +6,7 @@
 
 #from bounty.py import GameState
 import re
-
+import math
 
 sampleString = """
 +-----+
@@ -19,15 +19,18 @@ sampleString = """
 Enter Action(s):
 """
 
-# boardString is what will be recieved over the tcp connection
+# currentView is what will be recieved over the tcp connection
 # according to the spec, the '^' indicator is undefined and must be inferred by the agent
-boardString = re.findall('\|(.{5})\|', sampleString)
+currentView = re.findall('\|(.{5})\|', sampleString)
 
 
 #TODO move to OO respecting places
-location = (81, 81)
+BOARD_SIZE = 80
+VIEW_SIZE = 5
 
-rotation = 0;  # {0, 1, 2, 3}
+location = (BOARD_SIZE, BOARD_SIZE)
+
+rotation = 0  # {0, 1, 2, 3}
 
 FEATURES = {
     '^':    'player',
@@ -128,7 +131,7 @@ def sendMove(move):
 
 # location is a tuple of form (x, y)
 def getBoardLocation(self, location):
-    return self.board.getLocation()
+    return self.Board.getLocation()
 
 
 # returns space in front of player
@@ -172,3 +175,10 @@ def isFacingSea(self):
 def isFacingEdge(self):
     return #TODO
 
+
+
+def storeView(self):
+    offset = math.floor(VIEW_SIZE)
+    for i in range(VIEW_SIZE):
+        assert( len(self.currentView[i]) == VIEW_SIZE )
+        self.Board.board[i][self.location - offset : self.location + offset] = self.currentView[i]
