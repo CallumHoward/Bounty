@@ -18,16 +18,16 @@ class GameState:
     def getTurn(self):
         return self.turnNum
 
-    def isInBoat(self):
+    def getIsInBoat(self):
         return self.isInBoat
 
     def getNumDynamite(self):
         return self.numDynamite
 
-    def hasAxe(self):
+    def getHasAxe(self):
         return self.hasAxe
 
-    def hasGold(self):
+    def getHasGold(self):
         return self.hasGold
 
     ### setters
@@ -46,7 +46,7 @@ class Board:
         for i in range(0, 160):
             rows = []
             for j in range(0, 160):
-                rows.append(-1)
+                rows.append(u"\u2588")
             self.board.append(rows)
 
     def interpretString(self):
