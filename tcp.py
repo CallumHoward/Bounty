@@ -30,14 +30,14 @@ sock.connect(address)
 message = "F"
 
 # Keeps receiving messages from server until connection reset
-# i.e. until game ends and server stops connection    
+# i.e. until game ends and server stops connection
 while True:
     try:
         data = sock.recv(62)
         sock.sendall(message)
-	# have message = method call to get whatever move we want to send
+    # have message = method call to get whatever move we want to send
     except SocketError as e:
         sock.close()
-	break
-	# add in Game Lost or Game Won message if needed for Agent file
+        break
+    # add in Game Lost or Game Won message if needed for Agent file
 

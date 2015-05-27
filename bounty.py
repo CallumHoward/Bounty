@@ -5,6 +5,10 @@
 # Chris Phibbs and Callum Howard 2015
 
 import math
+import socket
+import sys
+from socket import error as SocketError
+import errno
 
 class GameState:
     'GameState class stores state of Bounty game'
@@ -46,9 +50,16 @@ class GameState:
     }
 
     # Constructor method for GameState class
-    def __init__(self):
+    def __init__(self, port):
         self.location = (GameState.BOARD_SIZE, GameState.BOARD_SIZE)
         self.board = Board()
+        self.agent = Agent()
+
+        # Establishes TCPIP connection on localhost at specified port
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        address = ('localhost', port)
+        self.sock.connect(address)
+
 
     ### getters
     def getTurn(self):
@@ -68,6 +79,26 @@ class GameState:
     def printBoard(self):
         self.board.printBoard()
 
+    def sendMove(self, move):
+        # Keeps receiving messages from server until connection reset
+        # i.e. until game ends and server stops connection
+        while True:
+            try:
+                sock.sendall(move)
+                self.data = sock.recv(62)
+                # have message = method call to get whatever move we want to send
+            except SocketError as e:
+                sock.close()
+                print "Connection closed: Game Over"
+                break
+        #TODO add in Game Lost or Game Won message if needed for Agent file
+        return move
+
+    def storeView(self):
+        offset = math.floor(VIEW_SIZE)
+        for i in range(VIEW_SIZE):
+            assert( len(self.currentView[i]) == VIEW_SIZE )
+            self.Board.board[i][self.location - offset : self.location + offset] = self.currentView[i]
 
 class Board:
     def __init__(self):
@@ -154,3 +185,48 @@ class Agent:
     # location is a tuple of form (x, y)
     def getBoardLocation(self, location):
         return self.board.getLocation()
+
+    # returns space in front of player
+    def getFacing(self):
+        # switch case
+        if (rotation == CARDINAL['north']):
+            target = getUp(self.location)
+            facing = self.getBoardLocation(target)
+
+        elif (rotation == CARDINAL['east']):
+            target = getRight(self.location)
+            facing = self.getBoardLocation(target)
+
+        elif (rotation == CARDINAL['south']):
+            target = getDown(self.location)
+            facing = self.getBoardLocation(target)
+
+        else: #(rotation == CARDINAL['west'])
+            target = getLeft(self.location)
+            facing = self.getBoardLocation(target)
+
+        return facing
+
+
+    def isFacingBlank(self):
+        return (self.getFacing() == FEATURES['blank'])
+
+
+    def isFacingTree(self):
+        return (self.getFacing() == FEATURES['tree'])
+
+
+    def isFacingWall(self):
+        return (self.getFacing() == FEATURES['wall'])
+
+
+    def isFacingSea(self):
+        return (self.getFacing() == FEATURES['sea'])
+
+
+    def isFacingEdge(self):
+        return #TODO
+
+
+    ### other methods
+

@@ -90,9 +90,9 @@ def getLeft(location):
 
 
 def moveForward(self):
-    if self.isFacingBlank():
+    # update internal representation of the board
+    if self.isFacingBlank() or self.isFacingAxe() or self.isFacingDynamite() or self.isFacingGold():
         self.location = getUp(self.location)
-    # send move
     sendMove(MOVES['forward'])
     return
 
