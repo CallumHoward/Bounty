@@ -64,10 +64,10 @@ class GameState(object):
         return self.turnNum
 
     ### setters
-    def nextTurn(self):
+    def _nextTurn(self):
         self.turnNum += 1
 
-    def storeView(self):
+    def _storeView(self):
         offset = math.floor(GameState.VIEW_SIZE)  #TODO should this be divided by 2? I can't remember
         for i in range(GameState.VIEW_SIZE):
             assert( len(self.currentView[i]) == GameState.VIEW_SIZE )
@@ -80,16 +80,15 @@ class GameState(object):
     def sendMove(self, move):
         # Keeps receiving messages from server until connection reset
         # i.e. until game ends and server stops connection
-        while True:
-            try:
-                self.sock.sendall(move)
-                self.currentView = self.sock.recv(GameState.BUFFER_SIZE)
-            except SocketError:
-                self.sock.close()
-                print "Connection closed: Game Over"
-                break
-        #TODO add in Game Lost or Game Won message if needed for Agent file
-        return move
+        try:
+            self.sock.sendall(move)
+            self.currentView = self.sock.recv(GameState.BUFFER_SIZE)
+            self._nextTurn()
+        except SocketError:
+            self.sock.close()
+            print "Connection closed: Game Over"
+            #TODO add in Game Lost or Game Won message if needed for Agent file
+
 
 class Board(object):
     def __init__(self):
@@ -138,6 +137,7 @@ class Agent(object):
 
     def __init__(self):
         self.location = (GameState.BOARD_SIZE, GameState.BOARD_SIZE)  # start in the middle of the allocated 2D list
+        self.origin = self.location
         self.rotation = 0  # {0, 1, 2, 3}
         self.turnNum = 0
         self.isInBoat = False
@@ -192,14 +192,38 @@ class Agent(object):
     def isFacingEdge(self):
         return #TODO
 
+    def canMoveForward(self):
+        if self.isFacingBlank():
+            return True
+        if self.isFacingAxe():
+            return True
+        if self.isFacingDynamite():
+            return True
+        if self.isFacingGold():
+            return True
+        if self.isFacingSea() and self.hasBoat():
+            return True
+        if self.isFacingTree() and self.hasAxe():
+            return True
+        if self.isFacingWall() and self.getNumDynamite():
+            return True
+        #TODO consider cases when at sea, must record if isInBoat correctly
 
     ### setters
     def moveForward(self):
         # update internal representation of the board
-        if self.isFacingBlank() or self.isFacingAxe() or self.isFacingDynamite() or self.isFacingGold():
+        if self.canMoveForward():
             self.location = self.state.board.getUp(self.location)
             self.state.sendMove(GameState.MOVES['forward'])
 
+            # update inventory if necessary, if we are facing and have moved forward, then we obtain
+            if self.isFacingAxe():
+                self.hasAxe = True
+            elif self.isFacingDynamite():
+                self.numDynamite += 1
+            elif self.isFacingGold():
+                self.hasGold = True
+            #TODO more cases needed here
 
     # location is a tuple of form (x, y)
     def getBoardLocation(self, location):
