@@ -11,7 +11,7 @@ from socket import error as SocketError
 class GameState(object):
     'GameState class stores state of Bounty game'
     PORT = 31415
-
+    BUFFER_SIZE = 62
     BOARD_SIZE = 80
     VIEW_SIZE = 5
 
@@ -35,7 +35,6 @@ class GameState(object):
         'blast':    'b'
     }
 
-    #! should constants go here?
     CARDINAL = {
         'north':    0,
         'east':     1,
@@ -51,8 +50,8 @@ class GameState(object):
 
     # Constructor method for GameState class
     def __init__(self):
-        self.location = (GameState.BOARD_SIZE, GameState.BOARD_SIZE)
         self.board = Board()
+        self.currentView = []
 
         # Establishes TCPIP connection on localhost at specified port
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -69,10 +68,10 @@ class GameState(object):
         self.turnNum += 1
 
     def storeView(self):
-        offset = math.floor(GameState.VIEW_SIZE)
+        offset = math.floor(GameState.VIEW_SIZE)  #TODO should this be divided by 2? I can't remember
         for i in range(GameState.VIEW_SIZE):
             assert( len(self.currentView[i]) == GameState.VIEW_SIZE )
-            self.board.board[i][self.location - offset : self.location + offset] = self.currentView[i]
+            self.state.board[i][self.location - offset : self.location + offset] = self.currentView[i]
 
     ### other methods
     def printBoard(self):
@@ -84,8 +83,7 @@ class GameState(object):
         while True:
             try:
                 self.sock.sendall(move)
-                self.data = self.sock.recv(62)
-                # have message = method call to get whatever move we want to send
+                self.currentView = self.sock.recv(GameState.BUFFER_SIZE)
             except SocketError:
                 self.sock.close()
                 print "Connection closed: Game Over"
@@ -139,6 +137,7 @@ class Agent(object):
     'Agent class for agent of Bounty Game'
 
     def __init__(self):
+        self.location = (GameState.BOARD_SIZE, GameState.BOARD_SIZE)  # start in the middle of the allocated 2D list
         self.rotation = 0  # {0, 1, 2, 3}
         self.turnNum = 0
         self.isInBoat = False
@@ -193,7 +192,14 @@ class Agent(object):
     def isFacingEdge(self):
         return #TODO
 
+
     ### setters
+    def moveForward(self):
+        # update internal representation of the board
+        if self.isFacingBlank() or self.isFacingAxe() or self.isFacingDynamite() or self.isFacingGold():
+            self.location = self.state.board.getUp(self.location)
+            self.state.sendMove(GameState.MOVES['forward'])
+
 
     # location is a tuple of form (x, y)
     def getBoardLocation(self, location):
