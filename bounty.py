@@ -161,6 +161,25 @@ class Agent(object):
     def getHasGold(self):
         return self.hasGold
 
+    ### setters
+
+    # Pass in True or False to set the value of isInBoat
+    def setInBoat(self, change):
+        self.isInBoat = change
+
+    def setHasAxe(self):
+        self.hasAxe = True
+
+    def setHasGold(self):
+        self.hasGold = True
+
+    def setDynamite(self, change):
+        if change == 1:
+            self.numDynamite += 1
+        else: # change == -1
+            self.numDynamite -= 1
+
+
     # returns space in front of player
     def _getFacing(self):
         if (self.rotation == GameState.CARDINAL['north']):
@@ -186,6 +205,9 @@ class Agent(object):
     def isFacingWall(self):
         return (self._getFacing() == GameState.FEATURES['wall'])
 
+    def isFacingBoat(self):
+        return (self._getFacing() == GameState.FEATURES['boat'])
+
     def isFacingSea(self):
         return (self._getFacing() == GameState.FEATURES['sea'])
 
@@ -201,13 +223,18 @@ class Agent(object):
             return True
         if self.isFacingGold():
             return True
-        if self.isFacingSea() and self.hasBoat():
+        if self.isFacingBoat():
             return True
-        if self.isFacingTree() and self.hasAxe():
+        if self.isFacingSea() and self.getIsInBoat():
+            return True
+        if self.isFacingTree() and self.getHasAxe():
             return True
         if self.isFacingWall() and self.getNumDynamite():
             return True
-        #TODO consider cases when at sea, must record if isInBoat correctly
+        if self.getIsInBoat() and (self.isFacingSea() or self.isFacingBlank() or self.isFacingAxe() or self.isFacingGold()):
+            return True
+            #TODO consider cases when at sea, must record if isInBoat correctly
+            #If moving back on land, must reset isInBoat somewhere
 
     ### setters
     def moveForward(self):
@@ -218,11 +245,15 @@ class Agent(object):
 
             # update inventory if necessary, if we are facing and have moved forward, then we obtain
             if self.isFacingAxe():
-                self.hasAxe = True
+                self.setHaxAxe()
             elif self.isFacingDynamite():
-                self.numDynamite += 1
+                self.setDynamite(1)
             elif self.isFacingGold():
-                self.hasGold = True
+                self.setHasGold()
+            elif self.isFacingBoat():
+                self.setInBoat(True) 
+            elif self.isFacingWall():
+                self.setDynamite(-1)
             #TODO more cases needed here
 
     # location is a tuple of form (x, y)
