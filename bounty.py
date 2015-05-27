@@ -6,12 +6,11 @@
 
 import math
 import socket
-import sys
 from socket import error as SocketError
-import errno
 
-class GameState:
+class GameState(object):
     'GameState class stores state of Bounty game'
+    PORT = 31415
 
     BOARD_SIZE = 80
     VIEW_SIZE = 5
@@ -49,15 +48,15 @@ class GameState:
         'right':    1
     }
 
+
     # Constructor method for GameState class
-    def __init__(self, port):
+    def __init__(self):
         self.location = (GameState.BOARD_SIZE, GameState.BOARD_SIZE)
         self.board = Board()
-        self.agent = Agent()
 
         # Establishes TCPIP connection on localhost at specified port
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        address = ('localhost', port)
+        address = ('localhost', GameState.PORT)
         self.sock.connect(address)
 
 
@@ -84,23 +83,17 @@ class GameState:
         # i.e. until game ends and server stops connection
         while True:
             try:
-                sock.sendall(move)
-                self.data = sock.recv(62)
+                self.sock.sendall(move)
+                self.data = self.sock.recv(62)
                 # have message = method call to get whatever move we want to send
-            except SocketError as e:
-                sock.close()
+            except SocketError:
+                self.sock.close()
                 print "Connection closed: Game Over"
                 break
         #TODO add in Game Lost or Game Won message if needed for Agent file
         return move
 
-    def storeView(self):
-        offset = math.floor(VIEW_SIZE)
-        for i in range(VIEW_SIZE):
-            assert( len(self.currentView[i]) == VIEW_SIZE )
-            self.Board.board[i][self.location - offset : self.location + offset] = self.currentView[i]
-
-class Board:
+class Board(object):
     def __init__(self):
         # board is a list of lists
         self.board = []
@@ -110,12 +103,31 @@ class Board:
                 rows.append(u"\u2588")
             self.board.append(rows)
 
-    def interpretString(self):
-        return
+    # location is a tuple of form (x, y)
+    # returns coordinate above
+    def getUp(location):
+        return (location[0], location[1] - 1)
+
+
+    # returns coordinate to right
+    def getRight(location):
+        return (location[0] + 1, location[1])
+
+
+    # returns coordinate below
+    def getDown(location):
+        return (location[0], location[1] + 1)
+
+
+    # returns coordinate to left
+    def getLeft(location):
+        return (location[0] - 1, location[1])
+
 
     # returns a list of tuples containing coordinates
     def shortestPath(self, (x1, y1), (x2, y2)):
         return
+
 
     def printBoard(self):
         for i in self.board:
@@ -123,7 +135,7 @@ class Board:
 
 
 
-class Agent:
+class Agent(object):
     'Agent class for agent of Bounty Game'
 
     def __init__(self):
@@ -134,6 +146,7 @@ class Agent:
         self.hasAxe = False
         self.hasGold = False
         self.offMap = False
+        self.state = GameState()
 
     ### getters
 
@@ -152,16 +165,16 @@ class Agent:
     # returns space in front of player
     def _getFacing(self):
         if (self.rotation == GameState.CARDINAL['north']):
-            target = getUp(self.location)
+            target = self.state.board.getUp(self.location)
             facing = self.getBoardLocation(target)
         elif (self.rotation == GameState.CARDINAL['east']):
-            target = getRight(self.location)
+            target = self.state.board.getRight(self.location)
             facing = self.getBoardLocation(target)
         elif (self.rotation == GameState.CARDINAL['south']):
-            target = getDown(self.location)
+            target = self.state.board.getDown(self.location)
             facing = self.getBoardLocation(target)
         else: #(self.rotation == GameState.CARDINAL['west'])
-            target = getLeft(self.location)
+            target = self.state.board.getLeft(self.location)
             facing = self.getBoardLocation(target)
         return facing
 
@@ -185,47 +198,6 @@ class Agent:
     # location is a tuple of form (x, y)
     def getBoardLocation(self, location):
         return self.board.getLocation()
-
-    # returns space in front of player
-    def getFacing(self):
-        # switch case
-        if (rotation == CARDINAL['north']):
-            target = getUp(self.location)
-            facing = self.getBoardLocation(target)
-
-        elif (rotation == CARDINAL['east']):
-            target = getRight(self.location)
-            facing = self.getBoardLocation(target)
-
-        elif (rotation == CARDINAL['south']):
-            target = getDown(self.location)
-            facing = self.getBoardLocation(target)
-
-        else: #(rotation == CARDINAL['west'])
-            target = getLeft(self.location)
-            facing = self.getBoardLocation(target)
-
-        return facing
-
-
-    def isFacingBlank(self):
-        return (self.getFacing() == FEATURES['blank'])
-
-
-    def isFacingTree(self):
-        return (self.getFacing() == FEATURES['tree'])
-
-
-    def isFacingWall(self):
-        return (self.getFacing() == FEATURES['wall'])
-
-
-    def isFacingSea(self):
-        return (self.getFacing() == FEATURES['sea'])
-
-
-    def isFacingEdge(self):
-        return #TODO
 
 
     ### other methods
