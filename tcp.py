@@ -36,28 +36,24 @@ a = True
 while a:
     try:
         ooft = ""
-        data = "poo"
+        data = ""
         while len(ooft) != 24:
             data = sock.recv(4092)
             ooft += data
-            #print "|",data,"|",
-            #print len(data)
-        #print "|",
-        #print data,
-        #print "|"
         i = 0
-        while (i < 24):
-            if (i == 5 or i == 10 or i == 14 or i == 19):
+        ooft = ooft[:12]+"^"+ooft[12:]
+        print ooft
+        while (i < 25):
+            if (i % 5 == 0 and i != 0):
                 print
                 print ooft[i],
             else:
-                if i == 12:
-                    print "^",
+               # if i == 12:
+               #     print "^",
                 print ooft[i],
             i += 1
         sock.sendall(message)
         a = False
-    # have message = method call to get whatever move we want to send
     except SocketError as e:
         sock.close()
         break
