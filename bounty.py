@@ -11,9 +11,11 @@ from socket import error as SocketError
 class GameState(object):
     'GameState class stores state of Bounty game'
     PORT = 31415
-    BUFFER_SIZE = 62
-    BOARD_SIZE = 80
-    VIEW_SIZE = 5
+    BUFFER_SIZE = 62  #TODO review this
+    BOARD_DIM = 80
+    BOARD_SIZE = BOARD_DIM * BOARD_DIM
+    VIEW_DIM = 5
+    VIEW_SIZE = VIEW_DIM * VIEW_DIM
 
     FEATURES = {
         '^':    'player',
@@ -51,7 +53,7 @@ class GameState(object):
     # Constructor method for GameState class
     def __init__(self):
         self.board = Board()
-        self.currentView = []
+        self.current_view = []
 
         # Establishes TCPIP connection on localhost at specified port
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -67,11 +69,24 @@ class GameState(object):
     def _nextTurn(self):
         self.turnNum += 1
 
-    def _storeView(self):
-        offset = math.floor(GameState.VIEW_SIZE)  #TODO should this be divided by 2? I can't remember
-        for i in range(GameState.VIEW_SIZE):
-            assert( len(self.currentView[i]) == GameState.VIEW_SIZE )
-            self.state.board[i][self.location - offset : self.location + offset] = self.currentView[i]
+    # updates the internal representation of the board with the agent's current view
+    def _storeView(self, agent_location):
+        # rotate current view to universal orientation
+        rotatedView = self._orientate(self.current_view)
+        assert(len(rotatedView == GameState.VIEW_SIZE))
+
+        # use agent location to determin which rows and columns of the board to update
+        offset = math.floor(GameState.VIEW_SIZE / 2)
+        # set board cursor to top left of the view
+        row = agent_location[0] - offset
+        col = agent_location[1] - offset
+
+
+
+#        for i in range(GameState.VIEW_SIZE):
+#            assert( len(rotatedView[i]) == GameState.VIEW_SIZE )  #TODO make sure this is ensured by sendMove()
+#            self.state.board[i][self.location - offset : self.location + offset] = rotatedView[i]
+
 
     ### other methods
     def printBoard(self):
@@ -82,7 +97,9 @@ class GameState(object):
         # i.e. until game ends and server stops connection
         try:
             self.sock.sendall(move)
-            self.currentView = self.sock.recv(GameState.BUFFER_SIZE)
+            self.current_view = self.sock.recv(GameState.BUFFER_SIZE)
+            # update internal representation of the board
+            self._storeView()
             self._nextTurn()
         except SocketError:
             self.sock.close()
@@ -247,7 +264,6 @@ class Agent(object):
 
     ### setters
     def moveForward(self):
-        # update internal representation of the board
         if self.canMoveForward():
             # update inventory if necessary, if we are facing and have moved forward, then we obtain
             if self.isFacingAxe():
@@ -260,10 +276,20 @@ class Agent(object):
                 self.setInBoat(True)
             elif self.isInBoat() and self.isFacingLand():
                 self.setInBoat(False)
-            #TODO more cases needed here
+            #TODO more cases needed here?
 
+            # note: GameState.sendMove() will update internal representation of the board
+            # update agent location
             self.location = self.state.board.getUp(self.location)
             self.state.sendMove(GameState.MOVES['forward'])
+
+    def removeTree(self):
+        if self.canRemoveTree():
+            self.state.sendMove(GameState.MOVES['chop'])
+
+    def removeWall(self):
+        if self.canRemoveWall():
+            self.state.sendMove(GameState.MOVES['chop'])
 
 
     # location is a tuple of form (x, y)
