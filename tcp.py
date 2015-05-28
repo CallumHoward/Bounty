@@ -31,10 +31,32 @@ message = "F"
 
 # Keeps receiving messages from server until connection reset
 # i.e. until game ends and server stops connection
-while True:
+a = True
+
+while a:
     try:
-        data = sock.recv(62)
+        ooft = ""
+        data = "poo"
+        while len(ooft) != 24:
+            data = sock.recv(4092)
+            ooft += data
+            #print "|",data,"|",
+            #print len(data)
+        #print "|",
+        #print data,
+        #print "|"
+        i = 0
+        while (i < 24):
+            if (i == 5 or i == 10 or i == 14 or i == 19):
+                print
+                print ooft[i],
+            else:
+                if i == 12:
+                    print "^",
+                print ooft[i],
+            i += 1
         sock.sendall(message)
+        a = False
     # have message = method call to get whatever move we want to send
     except SocketError as e:
         sock.close()
