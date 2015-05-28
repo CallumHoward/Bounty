@@ -191,15 +191,13 @@ class Agent(object):
         self.hasAxe = True
 
     def setHasGold(self):
-        self.hasGold = True
+        self.hasgold = true
 
-    #TODO consider 2 functions, gainDynamite and expendDynamite
-    # to prevent use of magic number in call
-    def setDynamite(self, change):
-        if change == 1:
-            self.numDynamite += 1
-        else: # change == -1
-            self.numDynamite -= 1
+    def gainDynamite(self):
+        self.numDynamite += 1
+
+    def expendDynamite(self):
+        self.numDynamite -= 1
 
 
     # returns space in front of player
@@ -269,7 +267,7 @@ class Agent(object):
             if self.isFacingAxe():
                 self.setHaxAxe()
             elif self.isFacingDynamite():
-                self.setDynamite(1)
+                self.gainDynamite()
             elif self.isFacingGold():
                 self.setHasGold()
             elif self.isFacingBoat():
@@ -289,7 +287,7 @@ class Agent(object):
 
     def removeWall(self):
         if self.canRemoveWall():
-            self.state.sendMove(GameState.MOVES['chop'])
+            self.state.sendMove(GameState.MOVES['blast'])
 
 
     # location is a tuple of form (x, y)
