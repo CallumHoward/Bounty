@@ -307,7 +307,6 @@ class Agent(object):
                 self.setInBoat(True)
             elif self.isInBoat() and self.isFacingLand():
                 self.setInBoat(False)
-            #TODO more cases needed here?
 
             # note: GameState.sendMove() will update internal representation of the board
             # update agent location
@@ -344,7 +343,7 @@ class Agent(object):
 
 
 def main():
-    #TODO support same args as agent.java
+    #TODO support same args as agent.java, but fall back on defaults
     agent = Agent()
     agent.state.printBoard()
 
