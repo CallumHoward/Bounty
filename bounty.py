@@ -64,11 +64,11 @@ class GameState(object):
 
     ### getters
     def getTurn(self):
-        return self.turnNum
+        return self.turn_num
 
     ### setters
     def _nextTurn(self):
-        self.turnNum += 1
+        self.turn_num += 1
 
     # updates the internal representation of the board with the agent's current view
     def _storeView(self, agent_location):
@@ -81,7 +81,6 @@ class GameState(object):
         # set board cursor to top left of the view
         row = agent_location[0] - offset
         col = agent_location[1] - offset
-
 
 
 #        for i in range(GameState.VIEW_SIZE):
@@ -161,12 +160,11 @@ class Agent(object):
         self.location = (GameState.BOARD_SIZE, GameState.BOARD_SIZE)  # start in the middle of the allocated 2D list
         self.origin = self.location
         self.rotation = 0  # {0, 1, 2, 3}
-        self.turnNum = 0
-        self.isInBoat = False
-        self.numDynamite = 0
-        self.hasAxe = False
-        self.hasGold = False
-        self.offMap = False
+        self.turn_num = 0
+        self.is_in_boat = False
+        self.num_dynamite = 0
+        self.has_axe = False
+        self.has_gold = False
         self.state = GameState()
 
     ### getters
@@ -174,30 +172,30 @@ class Agent(object):
         return self.isInBoat
 
     def getNumDynamite(self):
-        return self.numDynamite
+        return self.num_dynamite
 
     def getHasAxe(self):
-        return self.hasAxe
+        return self.has_axe
 
     def getHasGold(self):
-        return self.hasGold
+        return self.has_gold
 
     ### setters
     # Pass in True or False to set the value of isInBoat
-    def setInBoat(self, change):
-        self.isInBoat = change
+    def setInBoat(self, value):
+        self.is_in_boat = value
 
     def setHasAxe(self):
-        self.hasAxe = True
+        self.has_axe = True
 
     def setHasGold(self):
-        self.hasGold = True
+        self.has_gold = True
 
     def gainDynamite(self):
-        self.numDynamite += 1
+        self.num_dynamite += 1
 
     def expendDynamite(self):
-        self.numDynamite -= 1
+        self.num_dynamite -= 1
 
 
     # returns space in front of player
@@ -247,8 +245,6 @@ class Agent(object):
             return True
         if self.isInBoat() and (self.isFacingSea() or self.isFacingLand() or self.isFacingAxe() or self.isFacingGold()):
             return True
-            #TODO consider cases when at sea, must record if isInBoat correctly
-            #If moving back on land, must reset isInBoat somewhere --Done in moveForward
 
     def canRemoveTree(self):
         # note: a tree can be chopped from inside boat - tested
@@ -289,6 +285,13 @@ class Agent(object):
         if self.canRemoveWall():
             self.state.sendMove(GameState.MOVES['blast'])
 
+    def turnLeft(self):
+        self.state.sendMove(GameState.MOVES['left'])
+        self.rotation += GameState.DIRECTIONS['left']
+
+    def turnRight(self):
+        self.state.sendMove(GameState.MOVES['right'])
+        self.rotation += GameState.DIRECTIONS['right']
 
     # location is a tuple of form (x, y)
     def getBoardLocation(self, location):
