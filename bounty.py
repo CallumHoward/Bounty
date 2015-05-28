@@ -11,7 +11,7 @@ from socket import error as SocketError
 class GameState(object):
     'GameState class stores state of Bounty game'
     PORT = 31415
-    BUFFER_SIZE = 62  #TODO review this
+    MAX_MOVES = 10000
     BOARD_DIM = 80
     BOARD_SIZE = BOARD_DIM * BOARD_DIM
     VIEW_DIM = 5
@@ -68,31 +68,37 @@ class GameState(object):
 
     ### setters
     def _nextTurn(self):
-        self.turn_num += 1
+        if self.turn_num <= GameState.MAX_MOVES:
+            self.turn_num += 1
+        else:
+            print 'Max number of turns reached'
+            #TODO handle exiting of game
+
 
     # updates the internal representation of the board with the agent's current view
     def _storeView(self, agent_location):
         # rotate current view to universal orientation
         rotatedView = self._orientate(self.current_view)
-        assert(len(rotatedView == GameState.VIEW_SIZE))
+        assert(len(rotatedView == GameState.VIEW_SIZE))  #TODO remove before submitting
 
         # use agent location to determin which rows and columns of the board to update
-        offset = math.floor(GameState.VIEW_SIZE / 2)
+        offset = math.floor(GameState.VIEW_DIM / 2)  # floor because of zero indexing
         # set board cursor to top left of the view
-        row = agent_location[0] - offset
-        col = agent_location[1] - offset
+        row_start = agent_location[0] - offset
+        row_end = row_start + GameState.VIEW_DIM
+        col_start = agent_location[1] - offset
+        col_end = col_start + GameState.VIEW_DIM
 
-
-#        for i in range(GameState.VIEW_SIZE):
-#            assert( len(rotatedView[i]) == GameState.VIEW_SIZE )  #TODO make sure this is ensured by sendMove()
-#            self.state.board[i][self.location - offset : self.location + offset] = rotatedView[i]
+        # store current view into board row by row
+        for row in range(row_start, row_end):
+            self.state.board[row][col_start:col_end] = rotatedView[row * GameState.VIEW_DIM]
 
 
     ### other methods
     def printBoard(self):
         self.board.printBoard()
 
-    def sendMove(self, move):
+    def sendMove(self, move, agent_location):
         # Keeps receiving messages from server until connection reset
         # i.e. until game ends and server stops connection
         try:
@@ -275,22 +281,22 @@ class Agent(object):
             # note: GameState.sendMove() will update internal representation of the board
             # update agent location
             self.location = self.state.board.getUp(self.location)
-            self.state.sendMove(GameState.MOVES['forward'])
+            self.state.sendMove(GameState.MOVES['forward'], self.location)
 
     def removeTree(self):
         if self.canRemoveTree():
-            self.state.sendMove(GameState.MOVES['chop'])
+            self.state.sendMove(GameState.MOVES['chop'], self.location)
 
     def removeWall(self):
         if self.canRemoveWall():
-            self.state.sendMove(GameState.MOVES['blast'])
+            self.state.sendMove(GameState.MOVES['blast'], self.location)
 
     def turnLeft(self):
-        self.state.sendMove(GameState.MOVES['left'])
+        self.state.sendMove(GameState.MOVES['left'], self.location)
         self.rotation += GameState.DIRECTIONS['left']
 
     def turnRight(self):
-        self.state.sendMove(GameState.MOVES['right'])
+        self.state.sendMove(GameState.MOVES['right'], self.location)
         self.rotation += GameState.DIRECTIONS['right']
 
     # location is a tuple of form (x, y)
