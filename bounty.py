@@ -152,8 +152,7 @@ class Agent(object):
         self.state = GameState()
 
     ### getters
-
-    def getIsInBoat(self):
+    def isInBoat(self):
         return self.isInBoat
 
     def getNumDynamite(self):
@@ -166,8 +165,8 @@ class Agent(object):
         return self.hasGold
 
     ### setters
-
     # Pass in True or False to set the value of isInBoat
+    #TODO should it be seperated into two functions?
     def setInBoat(self, change):
         self.isInBoat = change
 
@@ -202,7 +201,7 @@ class Agent(object):
             facing = self.getBoardLocation(target)
         return facing
 
-    def isFacingBlank(self):
+    def isFacingLand(self):
         return (self._getFacing() == GameState.FEATURES['land'])
 
     def isFacingTree(self):
@@ -221,7 +220,7 @@ class Agent(object):
         return #TODO
 
     def canMoveForward(self):
-        if self.isFacingBlank():
+        if self.isFacingLand():
             return True
         if self.isFacingAxe():
             return True
@@ -231,24 +230,25 @@ class Agent(object):
             return True
         if self.isFacingBoat():
             return True
-        if self.isFacingSea() and self.getIsInBoat():
-            return True
-        if self.isFacingTree() and self.getHasAxe():
-            return True
-        if self.isFacingWall() and self.getNumDynamite():
-            return True
-        if self.getIsInBoat() and (self.isFacingSea() or self.isFacingBlank() or self.isFacingAxe() or self.isFacingGold()):
+        if self.isInBoat() and (self.isFacingSea() or self.isFacingLand() or self.isFacingAxe() or self.isFacingGold()):
             return True
             #TODO consider cases when at sea, must record if isInBoat correctly
-            #If moving back on land, must reset isInBoat somewhere
+            #If moving back on land, must reset isInBoat somewhere --Done in moveForward
+
+    def canRemoveTree(self):
+        # note: a tree can be chopped from inside boat - tested
+        if self.isFacingTree() and self.getHasAxe():
+            return True
+
+    def canRemoveWall(self):
+        #TODO test if a wall can be blasted from inside boat
+        if self.isFacingWall() and self.getNumDynamite():
+            return True
 
     ### setters
     def moveForward(self):
         # update internal representation of the board
         if self.canMoveForward():
-            self.location = self.state.board.getUp(self.location)
-            self.state.sendMove(GameState.MOVES['forward'])
-
             # update inventory if necessary, if we are facing and have moved forward, then we obtain
             if self.isFacingAxe():
                 self.setHaxAxe()
@@ -258,9 +258,13 @@ class Agent(object):
                 self.setHasGold()
             elif self.isFacingBoat():
                 self.setInBoat(True)
-            elif self.isFacingWall():
-                self.setDynamite(-1)
+            elif self.isInBoat() and self.isFacingLand():
+                self.setInBoat(False)
             #TODO more cases needed here
+
+            self.location = self.state.board.getUp(self.location)
+            self.state.sendMove(GameState.MOVES['forward'])
+
 
     # location is a tuple of form (x, y)
     def getBoardLocation(self, location):
