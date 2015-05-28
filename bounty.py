@@ -183,7 +183,6 @@ class Agent(object):
 
     ### setters
     # Pass in True or False to set the value of isInBoat
-    #TODO should it be seperated into two functions?
     def setInBoat(self, change):
         self.isInBoat = change
 
@@ -256,7 +255,7 @@ class Agent(object):
             return True
 
     def canRemoveWall(self):
-        #TODO test if a wall can be blasted from inside boat
+        # note: a wall can be blasted from inside boat - tested
         if self.isFacingWall() and self.getNumDynamite():
             return True
 
