@@ -62,6 +62,14 @@ class GameState(object):
         address = ('localhost', GameState.PORT)
         self.sock.connect(address)
         self.current_view = self.sock.recv(GameState.VIEW_SIZE)
+
+        print 'VIEW_SIZE = {}'.format(GameState.VIEW_SIZE)
+        print 'current_view:'
+        print '|',
+        print self.current_view,
+        print '|'
+        print
+
         self._storeView(self.board.START_LOCATION, Agent.INIT_ROTATION)
 
 
@@ -77,10 +85,11 @@ class GameState(object):
             print 'Max number of turns reached'
             #TODO handle exiting of game
 
-    def _orientate(self, original_view, rotation):
+    def _orientate(self, rotation):
+        rotated_view = self.current_view
         for num in range(rotation):
             # rotate view clockwise
-            rotated_view = zip(*original_view[::-1])
+            rotated_view = zip(*rotated_view[::-1])
 
         return rotated_view
 
@@ -88,8 +97,15 @@ class GameState(object):
     # updates the internal representation of the board with the agent's current view
     def _storeView(self, agent_location, agent_rotation):
         # rotate current view to universal orientation
-        rotatedView = self._orientate(self.current_view, agent_rotation)
-        assert(len(rotatedView == GameState.VIEW_SIZE))  #TODO remove before submitting
+        rotated_view = self._orientate(agent_rotation)
+
+        print 'length of current_view'
+        print len(self.current_view)
+
+        print 'length of rotated_view'
+        print len(rotated_view)
+
+        assert(len(rotated_view) == GameState.VIEW_SIZE)  #TODO remove before submitting
 
         # use agent location to determin which rows and columns of the board to update
         offset = math.floor(GameState.VIEW_DIM / 2)  # floor because of zero indexing
@@ -101,7 +117,7 @@ class GameState(object):
 
         # store current view into board row by row
         for row in range(row_start, row_end):
-            self.state.board[row][col_start:col_end] = rotatedView[row * GameState.VIEW_DIM]
+            self.state.board[row][col_start:col_end] = rotated_view[row * GameState.VIEW_DIM]
 
 
     ### other methods
