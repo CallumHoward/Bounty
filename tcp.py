@@ -31,13 +31,33 @@ message = "F"
 
 # Keeps receiving messages from server until connection reset
 # i.e. until game ends and server stops connection
-while True:
+receiving = True
+
+while receiving:
     try:
-        data = sock.recv(62)
-        sock.sendall(message)
-    # have message = method call to get whatever move we want to send
+        received_data = ""
+        data_stream = ""
+        while len(received_data) != 24:
+            data_stream = sock.recv(4092)
+            if len(data_stream) == 0:
+                receiving = False
+                break
+            received_data += data_stream
+        if receiving == False:
+            break
+        i = 0
+        received_data = received_data[:12]+"^"+received_data[12:]
+        agent_view = ""
+        while (i < 25):
+            if (i % 5 == 0 and i != 0):
+                agent_view = agent_view+"\n"+received_data[i]
+            else:
+                agent_view = agent_view+received_data[i]
+            i += 1
+        print agent_view
+        print
     except SocketError as e:
         sock.close()
         break
     # add in Game Lost or Game Won message if needed for Agent file
-
+    sock.sendall(message)
