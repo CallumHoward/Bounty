@@ -35,23 +35,23 @@ a = True
 
 while a:
     try:
-        ooft = ""
-        data = ""
-        while len(ooft) != 24:
-            data = sock.recv(4092)
-            ooft += data
+        received_data = ""
+        data_stream = ""
+        while len(received_data) != 24:
+            data_stream = sock.recv(4092)
+            received_data += data_stream
         i = 0
-        ooft = ooft[:12]+"^"+ooft[12:]
-        print ooft
+        received_data = received_data[:12]+"^"+received_data[12:]
+        agent_view = ""
         while (i < 25):
             if (i % 5 == 0 and i != 0):
-                print
-                print ooft[i],
+                agent_view = agent_view+"\n"+received_data[i]
             else:
-               # if i == 12:
-               #     print "^",
-                print ooft[i],
+                #if i == 12:
+                #    print "^",
+                agent_view = agent_view+received_data[i]
             i += 1
+        print agent_view
         sock.sendall(message)
         a = False
     except SocketError as e:
