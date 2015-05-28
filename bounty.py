@@ -26,7 +26,8 @@ class GameState(object):
         '*':    'wall',
         'a':    'axe',
         'g':    'gold',
-        ' ':    'land'
+        ' ':    'land',
+        '.':    'edge'
     }
 
     MOVES = {
@@ -190,7 +191,7 @@ class Agent(object):
         self.hasAxe = True
 
     def setHasGold(self):
-        self.hasgold = true
+        self.hasGold = True
 
     def gainDynamite(self):
         self.numDynamite += 1
@@ -231,7 +232,7 @@ class Agent(object):
         return (self._getFacing() == GameState.FEATURES['sea'])
 
     def isFacingEdge(self):
-        return #TODO
+        return (self._getFacing() == GameState.FEATURES['edge'])
 
     def canMoveForward(self):
         if self.isFacingLand():
