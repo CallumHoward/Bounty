@@ -86,18 +86,22 @@ class GameState(object):
             self._nextTurn()
         except SocketError:
             self.sock.close()
-            print "Connection closed: Game Over"
+            print 'Connection closed: Game Over'
             #TODO add in Game Lost or Game Won message if needed for Agent file
 
 
 class Board(object):
+    'Board class for internal representation of game board'
+
     def __init__(self):
         # board is a list of lists
         self.board = []
-        for i in range(0, 160):
+        # make internal board twice as big to guarantee enough space
+        side_length = 2 * GameState.BOARD_SIZE
+        for i in range(0, side_length):
             rows = []
-            for j in range(0, 160):
-                rows.append(u"\u2588")  # block character
+            for j in range(0, side_length):
+                rows.append(u'\u2588')  # block character
             self.board.append(rows)
 
     # location is a tuple of form (x, y)
@@ -128,7 +132,7 @@ class Board(object):
 
     def printBoard(self):
         for i in self.board:
-            print "".join(i)
+            print ''.join(i)
 
 
 
