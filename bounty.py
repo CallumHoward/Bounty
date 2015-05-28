@@ -24,7 +24,7 @@ class GameState(object):
         '*':    'wall',
         'a':    'axe',
         'g':    'gold',
-        ' ':    'blank'
+        ' ':    'land'
     }
 
     MOVES = {
@@ -97,7 +97,7 @@ class Board(object):
         for i in range(0, 160):
             rows = []
             for j in range(0, 160):
-                rows.append(u"\u2588")
+                rows.append(u"\u2588")  # block character
             self.board.append(rows)
 
     # location is a tuple of form (x, y)
@@ -173,6 +173,8 @@ class Agent(object):
     def setHasGold(self):
         self.hasGold = True
 
+    #TODO consider 2 functions, gainDynamite and expendDynamite
+    # to prevent use of magic number in call
     def setDynamite(self, change):
         if change == 1:
             self.numDynamite += 1
@@ -197,7 +199,7 @@ class Agent(object):
         return facing
 
     def isFacingBlank(self):
-        return (self._getFacing() == GameState.FEATURES['blank'])
+        return (self._getFacing() == GameState.FEATURES['land'])
 
     def isFacingTree(self):
         return (self._getFacing() == GameState.FEATURES['tree'])
@@ -251,7 +253,7 @@ class Agent(object):
             elif self.isFacingGold():
                 self.setHasGold()
             elif self.isFacingBoat():
-                self.setInBoat(True) 
+                self.setInBoat(True)
             elif self.isFacingWall():
                 self.setDynamite(-1)
             #TODO more cases needed here
