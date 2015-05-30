@@ -62,33 +62,41 @@ class GameState(object):
         address = ('localhost', GameState.PORT)
         self.sock.connect(address)
 
-        receiving = True
-        while receiving:
-            try:
-                received_data = ""
-                data_stream = ""
-                while len(received_data) != 24:
-                    data_stream = self.sock.recv(4092)
-                    if len(data_stream) == 0:
-                        receiving = False
-                        break
-                    received_data += data_stream
-                if receiving == False:
+        #receiving = True
+        #while receiving:
+        try:
+            received_data = ""
+            data_stream = ""
+            while len(received_data) != 24:
+                data_stream = self.sock.recv(4092)
+                if len(data_stream) == 0:
+                   # receiving = False
                     break
-                i = 0
-                received_data = received_data[:12]+"^"+received_data[12:]
-                agent_view = ""
-                while (i < 25):
-                    if (i % 5 == 0 and i != 0):
-                        agent_view = agent_view+"\n"+received_data[i]
-                    else:
-                        agent_view = agent_view+received_data[i]
-                    i += 1
-            except SocketError as e:
-                self.sock.close()
-                break
-
+                received_data += data_stream
+              #  print "len of received is ", len(received_data)
+            #if receiving == False:
+            #    break
+            i = 0
+            #print "out of first loop"
+            received_data = received_data[:12]+"^"+received_data[12:]
+            agent_view = ""
+            while (i < 25):
+             #   print "for i=", i, " object is |", received_data[i], "|"
+             #   if (i % 5 == 0 and i != 0):
+            #        print "executed mod condition"
+                agent_view = agent_view+received_data[i]
+                #else:
+                #    agent_view = agent_view+received_data[i]
+                i += 1
+                #print "stuck in i loop"
+        except SocketError as e:
+            self.sock.close()
+            #break
+            #print "stuck in outer loop"
+        print agent_view
+        #print "size of thing is", len(agent_view)
         self.current_view = agent_view
+
 
         print 'VIEW_SIZE = {}'.format(GameState.VIEW_SIZE)
         print 'current_view:'
@@ -132,6 +140,7 @@ class GameState(object):
         print 'length of rotated_view'
         print len(rotated_view)
 
+        # Change VIEW_SIZE to 29 - since it must include the newline characters
         assert(len(rotated_view) == GameState.VIEW_SIZE)  #TODO remove before submitting
 
         # use agent location to determin which rows and columns of the board to update
@@ -156,31 +165,26 @@ class GameState(object):
         # i.e. until game ends and server stops connection
         self.sock.sendall(move)
 
-        receiving = True
-        while receiving:
-            try:
-                received_data = ""
-                data_stream = ""
-                while len(received_data) != 24:
-                    data_stream = self.sock.recv(4092)
-                    if len(data_stream) == 0:
-                        receiving = False
-                        break
-                    received_data += data_stream
-                if receiving == False:
+        
+        try:
+            received_data = ""
+            data_stream = ""
+            while len(received_data) != 24:
+                data_stream = self.sock.recv(4092)
+                if len(data_stream) == 0:
                     break
-                i = 0
-                received_data = received_data[:12]+"^"+received_data[12:]
-                agent_view = ""
-                while (i < 25):
-                    if (i % 5 == 0 and i != 0):
-                        agent_view = agent_view+"\n"+received_data[i]
-                    else:
-                        agent_view = agent_view+received_data[i]
-                    i += 1
-            except SocketError as e:
-                self.sock.close()
-                break
+                received_data += data_stream
+            i = 0
+            received_data = received_data[:12]+"^"+received_data[12:]
+            agent_view = ""
+            while (i < 25):
+                if (i % 5 == 0 and i != 0):
+                    agent_view = agent_view+"\n"+received_data[i]
+                else:
+                    agent_view = agent_view+received_data[i]
+                i += 1
+        except SocketError as e:
+            self.sock.close()
             # TODO add in Game Lost or Game Won message if needed for Agent file
 
         self.current_view = agent_view
