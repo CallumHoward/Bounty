@@ -180,10 +180,7 @@ class GameState(object):
             received_data = received_data[:12]+"^"+received_data[12:]
             agent_view = ""
             while (i < 25):
-                if (i % 5 == 0 and i != 0):
-                    agent_view = agent_view+"\n"+received_data[i]
-                else:
-                    agent_view = agent_view+received_data[i]
+                agent_view = agent_view+received_data[i]
                 i += 1
         except SocketError as e:
             self.sock.close()
