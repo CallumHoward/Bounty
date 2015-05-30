@@ -166,10 +166,12 @@ class GameState(object):
 
         small_count = 0
 
-        for row in range(row_start, row_end):
+        for i, row in enumerate(range(row_start, row_end)):
+            for j, col in enumerate(range(col_start, col_end)):
+                self.board.board[row][col] = rotated_view[i][j]
 
-            print "row is ", row
-            self.board.board[row][col_start:col_end] = rotated_view[small_count][GameState.VIEW_DIM-1]
+
+            #self.board.board[row][col_start:col_end] = rotated_view[small_count][GameState.VIEW_DIM-1]
             # change back to self.state.board?
             small_count += 1
 
@@ -195,13 +197,14 @@ class GameState(object):
             i = 0
             received_data = received_data[:12]+"^"+received_data[12:]
             agent_view = ""
-            while (i < 25):
+            #print "len of thing is", len(received_data)
+            while (i < GameState.VIEW_SIZE):
                 agent_view = agent_view+received_data[i]
                 i += 1
-        except SocketError:
+        except (SocketError, IndexError):
             self.sock.close()
             # TODO add in Game Lost or Game Won message if needed for Agent file
-
+            exit()
         #self.current_view = agent_view
 
         self._convertString2List(agent_view)
