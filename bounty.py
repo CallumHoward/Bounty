@@ -6,6 +6,7 @@
 
 import math
 import socket
+import sys
 from socket import error as SocketError
 
 class GameState(object):
@@ -56,7 +57,7 @@ class GameState(object):
     def __init__(self):
         self.board = Board()
         self.current_view = []
-
+        print "args are:", sys.argv
         # Establishes TCPIP connection on localhost at specified port
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         address = ('localhost', GameState.PORT)
