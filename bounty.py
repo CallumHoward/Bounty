@@ -176,6 +176,9 @@ class Board(object):
     def getLeft(location):
         return (location[0] - 1, location[1])
 
+    # returns absolute coordinate
+    def getLocation(target_location):
+        return #TODO
 
     # returns a list of tuples containing coordinates
     def shortestPath(self, (x1, y1), (x2, y2)):
@@ -280,8 +283,16 @@ class Agent(object):
             return True
         if self.isFacingBoat():
             return True
-        if self.isInBoat() and (self.isFacingSea() or self.isFacingLand() or self.isFacingAxe() or self.isFacingGold()):
-            return True
+        if self.isInBoat():
+            if self.isFacingSea():
+                return True
+            if self.isFacingLand():
+                return True
+            if self.isFacingAxe():
+                return True
+            if self.isFacingGold():
+                return True
+        return False
 
     def canRemoveTree(self):
         # note: a tree can be chopped from inside boat - tested
@@ -324,10 +335,12 @@ class Agent(object):
     def turnLeft(self):
         self.state.sendMove(GameState.MOVES['left'], self.location, self.rotation)
         self.rotation += GameState.DIRECTIONS['left']
+        self.rotation %= len(GameState.CARDINAL)
 
     def turnRight(self):
         self.state.sendMove(GameState.MOVES['right'], self.location, self.rotation)
         self.rotation += GameState.DIRECTIONS['right']
+        self.rotation %= len(GameState.CARDINAL)
 
     # location is a tuple of form (x, y)
     def getBoardLocation(self, location):
