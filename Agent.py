@@ -4,7 +4,17 @@ import bounty
 import sys
 
 def main():
-    #TODO support same args as agent.java, but fall back on defaults
+    if len(sys.argv) != 3 or sys.argv[1] != "-p":
+        print "Usage: Agent -p <portnumber>"
+        return
+
+    portno = int(sys.argv[2])
+
+    if (portno < 1025 or portno > 65535):
+        print "Usage: Agent -p <portnumber>"
+        return
+
+    #TODO - pass the port to the agent class
     agent = bounty.Agent()
     agent.state.printBoard()
 
