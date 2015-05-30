@@ -104,6 +104,7 @@ class GameState(object):
     def getTurn(self):
         return self.turn_num
 
+
     ### setters
     def _nextTurn(self):
         if self.turn_num <= GameState.MAX_MOVES:
@@ -150,6 +151,7 @@ class GameState(object):
     ### other methods
     def printBoard(self):
         self.board.printBoard()
+
 
     def sendMove(self, move, agent_location, agent_rotation):
         # Keeps receiving messages from server until connection reset
@@ -355,32 +357,41 @@ class Agent(object):
         self.has_axe = False
         self.has_gold = False
 
+
     ### getters
     def isInBoat(self):
         return self.isInBoat
 
+
     def getNumDynamite(self):
         return self.num_dynamite
+
 
     def getHasAxe(self):
         return self.has_axe
 
+
     def getHasGold(self):
         return self.has_gold
+
 
     ### setters
     # Pass in True or False to set the value of isInBoat
     def setInBoat(self, value):
         self.is_in_boat = value
 
+
     def setHasAxe(self):
         self.has_axe = True
+
 
     def setHasGold(self):
         self.has_gold = True
 
+
     def gainDynamite(self):
         self.num_dynamite += 1
+
 
     def expendDynamite(self):
         self.num_dynamite -= 1
@@ -402,32 +413,42 @@ class Agent(object):
             facing = self.getBoardLocation(target)
         return facing
 
+
     def isFacingDynamite(self):
         return self.state.board.isDynamite(self._getFacing())
+
 
     def isFacingTree(self):
         return self.state.board.isTree(self._getFacing())
 
+
     def isFacingBoat(self):
         return self.state.board.isBoat(self._getFacing())
+
 
     def isFacingWater(self):
         return self.state.board.isWater(self._getFacing())
 
+
     def isFacingWall(self):
         return self.state.board.isWall(self._getFacing())
+
 
     def isFacingAxe(self):
         return self.state.board.isAxe(self._getFacing())
 
+
     def isFacingGold(self):
         return self.state.board.isGold(self._getFacing())
+
 
     def isFacingLand(self):
         return self.state.board.isLand(self._getFacing())
 
+
     def isFacingEdge(self):
         return self.state.board.isEdge(self._getFacing())
+
 
     def canMoveForward(self):
         if self.isFacingLand():
@@ -451,15 +472,18 @@ class Agent(object):
                 return True
         return False
 
+
     def canRemoveTree(self):
         # note: a tree can be chopped from inside boat - tested
         if self.isFacingTree() and self.getHasAxe():
             return True
 
+
     def canRemoveWall(self):
         # note: a wall can be blasted from inside boat - tested
         if self.isFacingWall() and self.getNumDynamite():
             return True
+
 
     ### setters
     def moveForward(self):
@@ -481,23 +505,28 @@ class Agent(object):
             self.location = self.state.board.getUp(self.location)
             self.state.sendMove(GameState.MOVES['forward'], self.location, self.rotation)
 
+
     def removeTree(self):
         if self.canRemoveTree():
             self.state.sendMove(GameState.MOVES['chop'], self.location, self.rotation)
 
+
     def removeWall(self):
         if self.canRemoveWall():
             self.state.sendMove(GameState.MOVES['blast'], self.location, self.rotation)
+
 
     def turnLeft(self):
         self.state.sendMove(GameState.MOVES['left'], self.location, self.rotation)
         self.rotation += GameState.DIRECTIONS['left']
         self.rotation %= len(GameState.CARDINAL)
 
+
     def turnRight(self):
         self.state.sendMove(GameState.MOVES['right'], self.location, self.rotation)
         self.rotation += GameState.DIRECTIONS['right']
         self.rotation %= len(GameState.CARDINAL)
+
 
     # location is a tuple of form (x, y)
     def getBoardLocation(self, location):
