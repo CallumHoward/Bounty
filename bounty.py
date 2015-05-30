@@ -254,19 +254,19 @@ class Board(object):
         land_adjacent = []
         all_adjacent = self.getAdjacent(location)
         for coordinate in all_adjacent:
-            if self.island(location):
+            if self.isLand(location):
                 land_adjacent.append(coordinate)
-            elif self.istree(coordinate) and has_axe:
+            elif self.isTree(coordinate) and has_axe:
                 land_adjacent.append(coordinate)
-            elif self.iswall(coordinate) and num_dynamite > 0:
+            elif self.isWall(coordinate) and num_dynamite > 0:
                 land_adjacent.append(coordinate)
-            elif self.isaxe(coordinate):
+            elif self.isAxe(coordinate):
                 land_adjacent.append(coordinate)
-            elif self.isdynamite(coordinate):
+            elif self.isDynamite(coordinate):
                 land_adjacent.append(coordinate)
-            elif self.isgold(coordinate):
+            elif self.isGold(coordinate):
                 land_adjacent.append(coordinate)
-            elif self.isboat(coordinate):
+            elif self.isBoat(coordinate):
                 land_adjacent.append(coordinate)
         return land_adjacent
 
@@ -277,19 +277,19 @@ class Board(object):
         for coordinate in all_adjacent:
             if self.isWater(coordinate):
                 water_adjacent.append(coordinate)
-            elif self.island(location):
+            elif self.isLand(location):
                 water_adjacent.append(coordinate)
-            elif self.istree(coordinate) and has_axe:
+            elif self.isTree(coordinate) and has_axe:
                 water_adjacent.append(coordinate)
-            elif self.iswall(coordinate) and num_dynamite > 0:
+            elif self.isWall(coordinate) and num_dynamite > 0:
                 water_adjacent.append(coordinate)
-            elif self.isaxe(coordinate):
+            elif self.isAxe(coordinate):
                 water_adjacent.append(coordinate)
-            elif self.isdynamite(coordinate):
+            elif self.isDynamite(coordinate):
                 water_adjacent.append(coordinate)
-            elif self.isgold(coordinate):
+            elif self.isGold(coordinate):
                 water_adjacent.append(coordinate)
-            elif self.isboat(coordinate):
+            elif self.isBoat(coordinate):
                 water_adjacent.append(coordinate)
         return water_adjacent
 
