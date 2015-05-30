@@ -19,7 +19,7 @@ class GameState(object):
     BOARD_SIZE = BOARD_DIM * BOARD_DIM
     VIEW_DIM = 5
     VIEW_SIZE = VIEW_DIM * VIEW_DIM
-    FOG_CHAR = u'\u2588'
+    FOG_CHAR = '+'#u'\u2588'
 
     FEATURES = {
         'player':   '^',
@@ -157,23 +157,19 @@ class GameState(object):
         col_end = col_start + GameState.VIEW_DIM
 
         #debug
-
-        #print rotated_view
-        #print "\n".join(rotated_view)
         # store current view into board row by row
-        print "length of board ", len(self.board.board)
-        print "row start: ", row_start, "\nrow end: ", row_end
-
-        small_count = 0
 
         for i, row in enumerate(range(row_start, row_end)):
             for j, col in enumerate(range(col_start, col_end)):
                 self.board.board[row][col] = rotated_view[i][j]
+                #print self.board.board[row][col],
+                print (i, row),
+            print
 
+        #for a in self.board.board:
+        #for a in rotated_view:
+            #print ''.join(a)
 
-            #self.board.board[row][col_start:col_end] = rotated_view[small_count][GameState.VIEW_DIM-1]
-            # change back to self.state.board?
-            small_count += 1
 
     ### other methods
     def printBoard(self):
@@ -209,13 +205,8 @@ class GameState(object):
 
         self._convertString2List(agent_view)
 
-
-        for a in self.current_view:
-            for b in a:
-                print b
-
         # update internal representation of the board
-    #TODO support same args as agent.java, but fall back on defaults
+        #TODO support same args as agent.java, but fall back on defaults
         self._storeView(agent_location, agent_rotation)
         self._nextTurn()
         self.board.printBoard()
@@ -400,8 +391,9 @@ class Board(object):
 
 
     def printBoard(self):
-        for i in self.board:
-            print ''.join(i)
+        #for i in self.board:
+        #   print ''.join(i)
+        pass
 
 
 
