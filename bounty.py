@@ -22,17 +22,17 @@ class GameState(object):
     FOG_CHAR = u'\u2588'
 
     FEATURES = {
-        '^':        'player',
-        'd':        'dynamite',
-        'T':        'tree',
-        'B':        'boat',
-        '~':        'water',
-        '*':        'wall',
-        'a':        'axe',
-        'g':        'gold',
-        ' ':        'land',
-        '.':        'edge',
-        FOG_CHAR:   'fog'
+        'player':   '^',
+        'dynamite': 'd',
+        'tree':     'T',
+        'boat':     'B',
+        'water':    '~',
+        'wall':     '*',
+        'axe':      'a',
+        'gold':     'g',
+        'land':     ' ',
+        'edge':     '.',
+        'fog':      FOG_CHAR
     }
 
     MOVES = {
@@ -58,6 +58,7 @@ class GameState(object):
 
     # Constructor method for GameState class
     def __init__(self):
+        self.turn_num = 0
         self.board = Board()
         self.current_view = []  #TODO make sure string is converted to list of lists for rotation
         print "args are:", sys.argv  #TODO port number
@@ -154,9 +155,9 @@ class GameState(object):
         row_end = row_start + GameState.VIEW_DIM
         col_start = agent_location[1] - offset
         col_end = col_start + GameState.VIEW_DIM
-        
+
         #debug
-        
+
         #print rotated_view
         #print "\n".join(rotated_view)
         # store current view into board row by row
@@ -164,9 +165,9 @@ class GameState(object):
         print "row start: ", row_start, "\nrow end: ", row_end
 
         small_count = 0
-        
+
         for row in range(row_start, row_end):
-            
+
             print "row is ", row
             self.board.board[row][col_start:col_end] = rotated_view[small_count][GameState.VIEW_DIM-1]
             # change back to self.state.board?
@@ -249,22 +250,22 @@ class Board(object):
 
     # location is a tuple of form (x, y)
     # returns coordinate above
-    def getUp(location):
+    def getUp(self, location):
         return (location[0], location[1] - 1)
 
 
     # returns coordinate to right
-    def getRight(location):
+    def getRight(self, location):
         return (location[0] + 1, location[1])
 
 
     # returns coordinate below
-    def getDown(location):
+    def getDown(self, location):
         return (location[0], location[1] + 1)
 
 
     # returns coordinate to left
-    def getLeft(location):
+    def getLeft(self, location):
         return (location[0] - 1, location[1])
 
 
@@ -411,7 +412,6 @@ class Agent(object):
         self.location = self.state.board.START_LOCATION  # start in the middle of the allocated 2D list
         self.origin = self.location
         self.rotation = Agent.INIT_ROTATION  # {0, 1, 2, 3}
-        self.turn_num = 0
         self.is_in_boat = False
         self.num_dynamite = 0
         self.has_axe = False
@@ -461,17 +461,13 @@ class Agent(object):
     def _getFacing(self):
         if (self.rotation == GameState.CARDINAL['north']):
             target = self.state.board.getUp(self.location)
-            facing = self.getBoardLocation(target)
         elif (self.rotation == GameState.CARDINAL['east']):
             target = self.state.board.getRight(self.location)
-            facing = self.getBoardLocation(target)
         elif (self.rotation == GameState.CARDINAL['south']):
             target = self.state.board.getDown(self.location)
-            facing = self.getBoardLocation(target)
         else: #(self.rotation == GameState.CARDINAL['west'])
             target = self.state.board.getLeft(self.location)
-            facing = self.getBoardLocation(target)
-        return facing
+        return target
 
 
     def isFacingDynamite(self):
@@ -590,14 +586,17 @@ class Agent(object):
 
     # location is a tuple of form (x, y)
     def getBoardLocation(self, location):
-        return self.board.getLocation()
+        return self.state.board.getLocation(location)
 
 
     ### other methods
     def makeBestMove(self):
         if self.canMoveForward():
             best_move = GameState.MOVES['forward']
-
-        return best_move
+            print 'sending forward....'
+            self.state.sendMove(best_move, self.location, self.rotation)
+        else:
+            print 'can\'t move!'
+            exit()
 
 
