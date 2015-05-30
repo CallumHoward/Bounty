@@ -241,11 +241,91 @@ class Board(object):
             'left':     self.getLeft(location)
         }
 
-        for direction, coordinates in all_adjacent:
+        for direction, coordinate in all_adjacent:
             if all_adjacent[direction] != GameState.FEATURES['edge']:
-                valid_adjacent.append(coordinates)
+                valid_adjacent.append(coordinate)
 
         return valid_adjacent
+
+
+    def getAdjOnLand(self, location, has_axe, num_dynamite):
+        land_adjacent = []
+        all_adjacent = self.getAdjacent(location)
+        for coordinate in all_adjacent:
+            if self.island(location):
+                land_adjacent.append(coordinate)
+            elif self.istree(coordinate) and has_axe:
+                land_adjacent.append(coordinate)
+            elif self.iswall(coordinate) and num_dynamite > 0:
+                land_adjacent.append(coordinate)
+            elif self.isaxe(coordinate):
+                land_adjacent.append(coordinate)
+            elif self.isdynamite(coordinate):
+                land_adjacent.append(coordinate)
+            elif self.isgold(coordinate):
+                land_adjacent.append(coordinate)
+            elif self.isboat(coordinate):
+                land_adjacent.append(coordinate)
+        return land_adjacent
+
+
+    def getAdjOnWater(self, location, has_axe, num_dynamite):
+        water_adjacent = []
+        all_adjacent = self.getAdjacent(location)
+        for coordinate in all_adjacent:
+            if self.isWater(coordinate):
+                water_adjacent.append(coordinate)
+            elif self.island(location):
+                water_adjacent.append(coordinate)
+            elif self.istree(coordinate) and has_axe:
+                water_adjacent.append(coordinate)
+            elif self.iswall(coordinate) and num_dynamite > 0:
+                water_adjacent.append(coordinate)
+            elif self.isaxe(coordinate):
+                water_adjacent.append(coordinate)
+            elif self.isdynamite(coordinate):
+                water_adjacent.append(coordinate)
+            elif self.isgold(coordinate):
+                water_adjacent.append(coordinate)
+            elif self.isboat(coordinate):
+                water_adjacent.append(coordinate)
+        return water_adjacent
+
+
+    def isDynamite(self, location):
+        return self.getLocation(location) == GameState.FEATURES['dynamite']
+
+
+    def isTree(self, location):
+        return self.getLocation(location) == GameState.FEATURES['tree']
+
+
+    def isBoat(self, location):
+        return self.getLocation(location) == GameState.FEATURES['boat']
+
+
+    def isWater(self, location):
+        return self.getLocation(location) == GameState.FEATURES['water']
+
+
+    def isWall(self, location):
+        return self.getLocation(location) == GameState.FEATURES['wall']
+
+
+    def isAxe(self, location):
+        return self.getLocation(location) == GameState.FEATURES['axe']
+
+
+    def isGold(self, location):
+        return self.getLocation(location) == GameState.FEATURES['gold']
+
+
+    def isLand(self, location):
+        return self.getLocation(location) == GameState.FEATURES['land']
+
+
+    def isEdge(self, location):
+        return self.getLocation(location) == GameState.FEATURES['land']
 
 
     # returns a list of tuples containing coordinates
@@ -322,23 +402,32 @@ class Agent(object):
             facing = self.getBoardLocation(target)
         return facing
 
-    def isFacingLand(self):
-        return (self._getFacing() == GameState.FEATURES['land'])
+    def isFacingDynamite(self):
+        return self.state.board.isDynamite(self._getFacing())
 
     def isFacingTree(self):
-        return (self._getFacing() == GameState.FEATURES['tree'])
-
-    def isFacingWall(self):
-        return (self._getFacing() == GameState.FEATURES['wall'])
+        return self.state.board.isTree(self._getFacing())
 
     def isFacingBoat(self):
-        return (self._getFacing() == GameState.FEATURES['boat'])
+        return self.state.board.isBoat(self._getFacing())
 
-    def isFacingSea(self):
-        return (self._getFacing() == GameState.FEATURES['sea'])
+    def isFacingWater(self):
+        return self.state.board.isWater(self._getFacing())
+
+    def isFacingWall(self):
+        return self.state.board.isWall(self._getFacing())
+
+    def isFacingAxe(self):
+        return self.state.board.isAxe(self._getFacing())
+
+    def isFacingGold(self):
+        return self.state.board.isGold(self._getFacing())
+
+    def isFacingLand(self):
+        return self.state.board.isLand(self._getFacing())
 
     def isFacingEdge(self):
-        return (self._getFacing() == GameState.FEATURES['edge'])
+        return self.state.board.isEdge(self._getFacing())
 
     def canMoveForward(self):
         if self.isFacingLand():
@@ -352,7 +441,7 @@ class Agent(object):
         if self.isFacingBoat():
             return True
         if self.isInBoat():
-            if self.isFacingSea():
+            if self.isFacingWater():
                 return True
             if self.isFacingLand():
                 return True
