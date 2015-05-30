@@ -97,17 +97,16 @@ class GameState(object):
             self.sock.close()
             #break
             #print "stuck in outer loop"
-        print agent_view
+        #print agent_view
         #print "size of thing is", len(agent_view)
-        self.current_view = agent_view
+        self._convertString2List(agent_view)
 
-
-        print 'VIEW_SIZE = {}'.format(GameState.VIEW_SIZE)
-        print 'current_view:'
-        print '|',
-        print self.current_view,
-        print '|'
-        print
+        #print 'VIEW_SIZE = {}'.format(GameState.VIEW_SIZE)
+        #print 'current_view:'
+        #print '|',
+        #print self.current_view,
+        #print '|'
+        #print
 
         self._storeView(self.board.START_LOCATION, Agent.INIT_ROTATION)
 
@@ -139,14 +138,14 @@ class GameState(object):
         # rotate current view to universal orientation
         rotated_view = self._orientate(agent_rotation)
 
-        print 'length of current_view'
-        print len(self.current_view)
+        #print 'length of current_view'
+        #print len(self.current_view)
 
-        print 'length of rotated_view'
-        print len(rotated_view)
+        #print 'length of rotated_view'
+        #print len(rotated_view)
 
         # Change VIEW_SIZE to 29 - since it must include the newline characters
-        assert(len(rotated_view) == GameState.VIEW_SIZE)  #TODO remove before submitting
+        #assert(len(rotated_view) == GameState.VIEW_SIZE)  #TODO remove before submitting
 
         # use agent location to determin which rows and columns of the board to update
         offset = int(math.floor(GameState.VIEW_DIM / 2))  # floor because of zero indexing
@@ -155,11 +154,23 @@ class GameState(object):
         row_end = row_start + GameState.VIEW_DIM
         col_start = agent_location[1] - offset
         col_end = col_start + GameState.VIEW_DIM
-
+        
+        #debug
+        
+        #print rotated_view
+        #print "\n".join(rotated_view)
         # store current view into board row by row
-        for row in range(row_start, row_end):
-            self.state.board[row][col_start:col_end] = rotated_view[row][GameState.VIEW_DIM]
+        print "length of board ", len(self.board.board)
+        print "row start: ", row_start, "\nrow end: ", row_end
 
+        small_count = 0
+        
+        for row in range(row_start, row_end):
+            
+            print "row is ", row
+            self.board.board[row][col_start:col_end] = rotated_view[small_count][GameState.VIEW_DIM-1]
+            # change back to self.state.board?
+            small_count += 1
 
     ### other methods
     def printBoard(self):
@@ -190,12 +201,40 @@ class GameState(object):
             self.sock.close()
             # TODO add in Game Lost or Game Won message if needed for Agent file
 
-        self.current_view = agent_view
+        #self.current_view = agent_view
+
+        self._convertString2List(agent_view)
+
+
+        for a in self.current_view:
+            for b in a:
+                print b
+
         # update internal representation of the board
+    #TODO support same args as agent.java, but fall back on defaults
         self._storeView(agent_location, agent_rotation)
         self._nextTurn()
         self.board.printBoard()
 
+    def _convertString2List(self, string):
+        i = 0
+        j = 0
+
+        self.current_view = []
+        while (i < GameState.VIEW_DIM):
+            self.current_view.append([])
+            i+=1
+
+        i = 0
+
+        #print "string length is ", len(string)
+        while (j < GameState.VIEW_SIZE):
+            #print "index of string is ", j
+            #self.current_view[i].append(string[j])
+            if (j % GameState.VIEW_DIM  == 0 and j != 0):
+                i+=1
+            self.current_view[i].append(string[j])
+            j+=1
 
 class Board(object):
     'Board class for internal representation of game board'
