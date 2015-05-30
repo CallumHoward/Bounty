@@ -145,7 +145,7 @@ class GameState(object):
         assert(len(rotated_view) == GameState.VIEW_SIZE)  #TODO remove before submitting
 
         # use agent location to determin which rows and columns of the board to update
-        offset = math.floor(GameState.VIEW_DIM / 2)  # floor because of zero indexing
+        offset = int(math.floor(GameState.VIEW_DIM / 2))  # floor because of zero indexing
         # set board cursor to top left of the view
         row_start = agent_location[0] - offset
         row_end = row_start + GameState.VIEW_DIM
