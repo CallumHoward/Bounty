@@ -226,9 +226,27 @@ class Board(object):
     def getLeft(location):
         return (location[0] - 1, location[1])
 
-    # returns absolute coordinate
-    def getLocation(target_location):
-        return #TODO
+
+    # returns the contents of the location
+    def getLocation(self, location):
+        return self.board[location[0]][location[1]]
+
+    # returns adjacent locations that are in the map
+    def getAdjacent(self, location):
+        valid_adjacent = []
+        all_adjacent = {
+            'up':       self.getUp(location),
+            'right':    self.getRight(location),
+            'down':     self.getDown(location),
+            'left':     self.getLeft(location)
+        }
+
+        for direction, coordinates in all_adjacent:
+            if all_adjacent[direction] != GameState.FEATURES['edge']:
+                valid_adjacent.append(coordinates)
+
+        return valid_adjacent
+
 
     # returns a list of tuples containing coordinates
     def shortestPath(self, (x1, y1), (x2, y2)):
