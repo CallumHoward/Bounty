@@ -61,7 +61,34 @@ class GameState(object):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         address = ('localhost', GameState.PORT)
         self.sock.connect(address)
-        self.current_view = self.sock.recv(GameState.VIEW_SIZE)
+
+        receiving = True
+        while receiving:
+            try:
+                received_data = ""
+                data_stream = ""
+                while len(received_data) != 24:
+                    data_stream = self.sock.recv(4092)
+                    if len(data_stream) == 0:
+                        receiving = False
+                        break
+                    received_data += data_stream
+                if receiving == False:
+                    break
+                i = 0
+                received_data = received_data[:12]+"^"+received_data[12:]
+                agent_view = ""
+                while (i < 25):
+                    if (i % 5 == 0 and i != 0):
+                        agent_view = agent_view+"\n"+received_data[i]
+                    else:
+                        agent_view = agent_view+received_data[i]
+                    i += 1
+            except SocketError as e:
+                self.sock.close()
+                break
+
+        self.current_view = agent_view
 
         print 'VIEW_SIZE = {}'.format(GameState.VIEW_SIZE)
         print 'current_view:'
@@ -127,17 +154,40 @@ class GameState(object):
     def sendMove(self, move, agent_location, agent_rotation):
         # Keeps receiving messages from server until connection reset
         # i.e. until game ends and server stops connection
-        try:
-            self.sock.sendall(move)
-            self.current_view = self.sock.recv(GameState.VIEW_SIZE)
-            # update internal representation of the board
-            self._storeView(agent_location, agent_rotation)
-            self._nextTurn()
-            self.board.printBoard()
-        except SocketError:
-            self.sock.close()
-            print 'Connection closed: Game Over'
-            #TODO add in Game Lost or Game Won message if needed for Agent file
+        self.sock.sendall(move)
+
+        receiving = True
+        while receiving:
+            try:
+                received_data = ""
+                data_stream = ""
+                while len(received_data) != 24:
+                    data_stream = self.sock.recv(4092)
+                    if len(data_stream) == 0:
+                        receiving = False
+                        break
+                    received_data += data_stream
+                if receiving == False:
+                    break
+                i = 0
+                received_data = received_data[:12]+"^"+received_data[12:]
+                agent_view = ""
+                while (i < 25):
+                    if (i % 5 == 0 and i != 0):
+                        agent_view = agent_view+"\n"+received_data[i]
+                    else:
+                        agent_view = agent_view+received_data[i]
+                    i += 1
+            except SocketError as e:
+                self.sock.close()
+                break
+            # TODO add in Game Lost or Game Won message if needed for Agent file
+
+        self.current_view = agent_view
+        # update internal representation of the board
+        self._storeView(agent_location, agent_rotation)
+        self._nextTurn()
+        self.board.printBoard()
 
 
 class Board(object):
@@ -309,7 +359,7 @@ class Agent(object):
         if self.canMoveForward():
             # update inventory if necessary, if we are facing and have moved forward, then we obtain
             if self.isFacingAxe():
-                self.setHaxAxe()
+                self.setHasAxe()
             elif self.isFacingDynamite():
                 self.gainDynamite()
             elif self.isFacingGold():
