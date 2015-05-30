@@ -7,6 +7,7 @@
 import math
 import socket
 from socket import error as SocketError
+import Queue
 
 class GameState(object):
     'GameState class stores state of Bounty game'
@@ -17,18 +18,20 @@ class GameState(object):
     BOARD_SIZE = BOARD_DIM * BOARD_DIM
     VIEW_DIM = 5
     VIEW_SIZE = VIEW_DIM * VIEW_DIM
+    FOG_CHAR = u'\u2588'
 
     FEATURES = {
-        '^':    'player',
-        'd':    'dynamite',
-        'T':    'tree',
-        'B':    'boat',
-        '~':    'water',
-        '*':    'wall',
-        'a':    'axe',
-        'g':    'gold',
-        ' ':    'land',
-        '.':    'edge'
+        '^':        'player',
+        'd':        'dynamite',
+        'T':        'tree',
+        'B':        'boat',
+        '~':        'water',
+        '*':        'wall',
+        'a':        'axe',
+        'g':        'gold',
+        ' ':        'land',
+        '.':        'edge',
+        FOG_CHAR:   'fog'
     }
 
     MOVES = {
@@ -198,15 +201,10 @@ class Board(object):
     START_LOCATION = (GameState.BOARD_DIM, GameState.BOARD_DIM)
 
     def __init__(self):
-        # board is a list of lists
-        self.board = []
         # make internal board twice as big to guarantee enough space
         side_length = 2 * GameState.BOARD_DIM
-        for i in range(0, side_length):
-            rows = []
-            for j in range(0, side_length):
-                rows.append(u'\u2588')  # block character
-            self.board.append(rows)
+        # board is a list of lists initialised to fog
+        self.board = [[GameState.FOG_CHAR] * side_length] * side_length
 
     # location is a tuple of form (x, y)
     # returns coordinate above
@@ -330,9 +328,30 @@ class Board(object):
         return self.getLocation(location) == GameState.FEATURES['land']
 
 
+    def isFog(self, location):
+        return self.getLocation(location) == GameState.FEATURES['fog']
+
+
     # returns a list of tuples containing coordinates
     def shortestPath(self, (x1, y1), (x2, y2)):
         return
+
+
+    # Breadth First Search on what has been seen in internal representation of board
+    def bfs(self, origin):
+        frontier = Queue()
+        frontier.put(origin)
+        side_length = 2 * GameState.BOARD_DIM
+        UNEXPLORED = (None, None)
+        # contains the location that bfs came from, otherwise UNEXPLORED
+        parent = [[UNEXPLORED] * side_length] * side_length
+
+        while not frontier.empty():
+            current = frontier.get()
+            for adjacent in self.getAdjOnLand(current):  #TODO implement water
+                if parent[ adjacent[0] ][ adjacent[1] ] == UNEXPLORED:
+                    frontier.put(adjacent)
+                    parent[ adjacent[0] ][ adjacent[1] ] = current
 
 
     def printBoard(self):
