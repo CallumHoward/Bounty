@@ -2,6 +2,7 @@
 
 import bounty
 import sys
+import time
 
 def main():
     if len(sys.argv) != 3 or sys.argv[1] != "-p":
@@ -18,8 +19,10 @@ def main():
     agent = bounty.Agent()
     agent.state.printBoard()
 
-    while agent.state.getTurn() <= GameState.MAX_MOVES:
+    while agent.state.getTurn() <= bounty.GameState.MAX_MOVES:
         agent.makeBestMove()
+        print 'sleeping...'
+        time.sleep(1)
 
 # call main function only if not imported as a module
 if __name__ == '__main__':
