@@ -58,7 +58,7 @@ class GameState(object):
     # Constructor method for GameState class
     def __init__(self):
         self.board = Board()
-        self.current_view = []
+        self.current_view = []  #TODO make sure string is converted to list of lists for rotation
 
         # Establishes TCPIP connection on localhost at specified port
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -92,7 +92,7 @@ class GameState(object):
                 #    agent_view = agent_view+received_data[i]
                 i += 1
                 #print "stuck in i loop"
-        except SocketError as e:
+        except SocketError:
             self.sock.close()
             #break
             #print "stuck in outer loop"
@@ -157,7 +157,7 @@ class GameState(object):
 
         # store current view into board row by row
         for row in range(row_start, row_end):
-            self.state.board[row][col_start:col_end] = rotated_view[row * GameState.VIEW_DIM]
+            self.state.board[row][col_start:col_end] = rotated_view[row][GameState.VIEW_DIM]
 
 
     ### other methods
@@ -170,7 +170,7 @@ class GameState(object):
         # i.e. until game ends and server stops connection
         self.sock.sendall(move)
 
-        
+
         try:
             received_data = ""
             data_stream = ""
@@ -185,7 +185,7 @@ class GameState(object):
             while (i < 25):
                 agent_view = agent_view+received_data[i]
                 i += 1
-        except SocketError as e:
+        except SocketError:
             self.sock.close()
             # TODO add in Game Lost or Game Won message if needed for Agent file
 
