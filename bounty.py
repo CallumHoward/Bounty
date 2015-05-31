@@ -365,10 +365,16 @@ class Board(object):
     # returns a list of tuples containing coordinates
     def shortestPath(self, origin, destination):
         path = []
+        markers = ['v', '<', '^', '>']
         parent = self.bfs(origin)
         current = destination
         while current != origin:
-            path.append(parent[ current[0] ][ current[1] ])
+            prev = current
+            current = parent[ current[1] ][ current[0] ]
+            path.append(current)
+            print path
+            print markers[self.directionAdjacent(current, prev)]
+            raw_input('...')
 
         return reversed(path)
 
@@ -379,8 +385,8 @@ class Board(object):
         frontier.put(origin)
         side_length = 2 * GameState.BOARD_DIM
         UNEXPLORED = (0, 0)
-        markers = ['^', '>', 'v', '<']
-        #markers = ['v', '<', '^', '>']
+        #markers = ['^', '>', 'v', '<']
+        markers = ['v', '<', '^', '>']
         # contains the location that bfs came from, otherwise UNEXPLORED
         parent = []
         for i in range(side_length):
@@ -655,8 +661,8 @@ class Agent(object):
             destination = self.state.board.getUp(self.location)
             destination = self.state.board.getUp(destination)
             destination = self.state.board.getLeft(destination)
-            self.state.board.shortestPath(self.location, destination)
-            raw_input('Enter to continue..')
+            print self.state.board.shortestPath(self.location, destination)
+            exit()
         elif input == 'b':
             self.removeWall()
         elif input == 'c':
