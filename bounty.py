@@ -8,7 +8,7 @@ import math
 import socket
 import sys
 from socket import error as SocketError
-import Queue
+from Queue import Queue
 import time
 import random
 
@@ -17,7 +17,7 @@ class GameState(object):
 
     PORT = 31415
     MAX_MOVES = 10000
-    BOARD_DIM = 20#80
+    BOARD_DIM = 10#80
     BOARD_SIZE = BOARD_DIM * BOARD_DIM
     VIEW_DIM = 5
     VIEW_SIZE = VIEW_DIM * VIEW_DIM
@@ -275,7 +275,7 @@ class Board(object):
             'left':     self.getLeft(location)
         }
 
-        for direction, coordinate in all_adjacent:
+        for direction, coordinate in all_adjacent.iteritems():
             if all_adjacent[direction] != GameState.FEATURES['edge']:
                 valid_adjacent.append(coordinate)
 
@@ -286,7 +286,7 @@ class Board(object):
         land_adjacent = []
         all_adjacent = self.getAdjacent(location)
         for coordinate in all_adjacent:
-            if self.isLand(location):
+            if self.isLand(coordinate):
                 land_adjacent.append(coordinate)
             elif self.isTree(coordinate) and has_axe:
                 land_adjacent.append(coordinate)
@@ -309,7 +309,7 @@ class Board(object):
         for coordinate in all_adjacent:
             if self.isWater(coordinate):
                 water_adjacent.append(coordinate)
-            elif self.isLand(location):
+            elif self.isLand(coordinate):
                 water_adjacent.append(coordinate)
             elif self.isTree(coordinate) and has_axe:
                 water_adjacent.append(coordinate)
@@ -376,16 +376,22 @@ class Board(object):
         frontier = Queue()
         frontier.put(origin)
         side_length = 2 * GameState.BOARD_DIM
-        UNEXPLORED = (None, None)
+        UNEXPLORED = (0, 0)
         # contains the location that bfs came from, otherwise UNEXPLORED
         parent = [[UNEXPLORED] * side_length] * side_length
 
+        has_axe = False  #TODO  implement these
+        num_dynamite = 0
+        print 'ADJACENT:', self.getAdjOnLand(origin, has_axe, num_dynamite)
+
         while not frontier.empty():
             current = frontier.get()
-            for adjacent in self.getAdjOnLand(current):  #TODO implement water
+            for adjacent in self.getAdjOnLand(current, has_axe, num_dynamite):  #TODO implement water
                 if parent[ adjacent[0] ][ adjacent[1] ] == UNEXPLORED:
                     frontier.put(adjacent)
                     parent[ adjacent[0] ][ adjacent[1] ] = current
+
+        print parent
 
 
     def printBoard(self):
@@ -588,7 +594,7 @@ class Agent(object):
 
     ### other methods
     def makeBestMove(self):
-        if self.canMoveForward() and random.randint(-1,1):
+        if self.canMoveForward() and random.randint(-1,4):
             self.moveForward()
         else:
             a = random.randint(-1,1)
@@ -599,13 +605,11 @@ class Agent(object):
                 self.turnRight()
 
         print 'FACING: |' + self.state.board.getLocation(self._getFacing()) + '|', '\t', self._getFacing()
-        time.sleep(0.2)
+        time.sleep(0.05)
 
 
     def userControl(self):
         print 'FACING: |' + self.state.board.getLocation(self._getFacing()) + '|', '\t', self._getFacing()
-        a = self.isInBoat()
-        print 'in boat?', a
         print 'Move: ',
         input = raw_input()
 
@@ -615,7 +619,9 @@ class Agent(object):
             self.turnLeft()
         elif input == 'r':
             self.turnRight()
-            #print "rotation after call is ", self.rotation
+        elif input == 'b':
+            self.state.board.bfs(self.location)
+            raw_input('Enter to continue..')
         else:
             print 'can\'t move!'
             exit()
