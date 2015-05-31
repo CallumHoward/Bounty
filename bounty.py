@@ -9,7 +9,7 @@ import socket
 import sys
 from socket import error as SocketError
 from Queue import Queue
-import time
+#import time
 import random
 
 class GameState(object):
@@ -340,7 +340,7 @@ class Board(object):
         current = destination
 
         #DEBUG
-        path_map = self.board
+        path_map = list(self.board)
         #for i in range(side_length):
         #    row = []
         #    for j in range(side_length):
@@ -362,7 +362,7 @@ class Board(object):
             print '...'
             raw_input()
 
-        return path
+        return list(reversed(path))
 
 
     # Breadth First Search on what has been seen in internal representation of board
@@ -668,7 +668,9 @@ class Agent(object):
     def makeBestMove(self):
         self.smartBot()
         print 'FACING: |' + self.state.board.getLocation(self._getFacing()) + '|', '\t', self._getFacing()
-        time.sleep(0.05) #TODO remove before submitting
+        #time.sleep(0.05) #TODO remove before submitting
+        #print '..'
+        #raw_input()
 
 
     def dumbBot(self):
