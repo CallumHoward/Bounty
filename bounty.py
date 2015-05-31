@@ -17,7 +17,7 @@ class GameState(object):
 
     PORT = 31415
     MAX_MOVES = 10000
-    BOARD_DIM = 10#80  #TODO set to 80 before submitting
+    BOARD_DIM = 20#80  #TODO set to 80 before submitting
     BOARD_SIZE = BOARD_DIM * BOARD_DIM
     VIEW_DIM = 5
     VIEW_SIZE = VIEW_DIM * VIEW_DIM
@@ -87,7 +87,7 @@ class GameState(object):
             while (i < 25):
              #   print "for i=", i, " object is |", received_data[i], "|"
              #   if (i % 5 == 0 and i != 0):
-            #        print "executed mod condition"
+             #       print "executed mod condition"
                 agent_view = agent_view+received_data[i]
                 #else:
                 #    agent_view = agent_view+received_data[i]
@@ -360,16 +360,32 @@ class Board(object):
     def shortestPath(self, origin, destination):
         path = []
         markers = ['^', '>', 'v', '<']
+        max_path_length = GameState.BOARD_SIZE
         parent = self.bfs(origin)
         current = destination
-        while current != origin:
+        side_length = 2 * GameState.BOARD_DIM
+
+        #DEBUG
+        path_map = []
+        for i in range(side_length):
+            row = []
+            for j in range(side_length):
+                row.append(' ')
+            path_map.append(row)
+
+        loop_count = 0
+        while current != origin and loop_count < max_path_length:
             prev = current
             current = parent[ current[1] ][ current[0] ]
             path.append(self.directionAdjacent(current, prev))
-
-        for direction in path:
-            print markers[direction],
-        print
+            loop_count += 1
+            #DEBUG
+            for direction in path:
+                path_map[ prev[1] ][ prev[0] ] = markers[direction],
+            for row in path_map:
+                print ''.join(row)
+            print '...'
+            raw_input()
 
         return path
 
