@@ -62,7 +62,8 @@ class GameState(object):
     def __init__(self):
         self.turn_num = 0
         self.board = Board()
-        self.current_view = []  #TODO make sure string is converted to list of lists for rotation
+        self.current_view = [] 
+
         # Establishes TCPIP connection on localhost at specified port
         portNumber = int(sys.argv[2])
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -136,8 +137,6 @@ class GameState(object):
         # rotate current view to universal orientation
         rotated_view = self._orientate(agent_rotation)
 
-        #assert(len(rotated_view) == GameState.VIEW_SIZE)  #TODO remove before submitting
-
         # use agent location to determin which rows and columns of the board to update
         offset = int(math.floor(GameState.VIEW_DIM / 2))  # floor because of zero indexing
         # set board cursor to top left of the view
@@ -173,9 +172,8 @@ class GameState(object):
                 received_data += data_stream
             i = 0
             markers = ['^', '>', 'v', '<']
-            received_data = received_data[:12] + markers[agent_rotation] + received_data[12:] #TODO ^ is not going to be rotated properly
+            received_data = received_data[:12] + markers[agent_rotation] + received_data[12:] 
             agent_view = ""
-            #print "len of thing is", len(received_data)
             while (i < GameState.VIEW_SIZE):
                 agent_view = agent_view+received_data[i]
                 i += 1
@@ -184,15 +182,10 @@ class GameState(object):
             self._nextTurn()
             print "Game Won in", self.getTurn(), "moves."
             exit()
-        #self.current_view = agent_view
 
         self._convertString2List(agent_view)
 
-        # Rotation is incorrect at this point, because you send previous rotation
-        # before updating to new one
-
         # update internal representation of the board
-        #TODO support same args as agent.java, but fall back on defaults
         self._storeView(agent_location, agent_rotation)
         self._nextTurn()
         self.printBoard()
