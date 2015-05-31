@@ -76,39 +76,19 @@ class GameState(object):
             while len(received_data) != 24:
                 data_stream = self.sock.recv(4092)
                 if len(data_stream) == 0:
-                   # receiving = False
                     break
                 received_data += data_stream
-              #  print "len of received is ", len(received_data)
             i = 0
             received_data = received_data[:12]+"^"+received_data[12:]
             agent_view = ""
             while (i < 25):
-             #   print "for i=", i, " object is |", received_data[i], "|"
-             #   if (i % 5 == 0 and i != 0):
-            #        print "executed mod condition"
                 agent_view = agent_view+received_data[i]
-                #else:
-                #    agent_view = agent_view+received_data[i]
                 i += 1
-                #print "stuck in i loop"
         except SocketError:
             self.sock.close()
-            #break
-            #print "stuck in outer loop"
-        #print agent_view
-        #print "size of thing is", len(agent_view)
         self._convertString2List(agent_view)
 
-        #print 'VIEW_SIZE = {}'.format(GameState.VIEW_SIZE)
-        #print 'current_view:'
-        #print '|',
-        #print self.current_view,
-        #print '|'
-        #print
-
         self._storeView(self.board.START_LOCATION, Agent.INIT_ROTATION)
-
 
     ### getters
     def getTurn(self):
@@ -139,6 +119,7 @@ class GameState(object):
 
         # use agent location to determin which rows and columns of the board to update
         offset = int(math.floor(GameState.VIEW_DIM / 2))  # floor because of zero indexing
+
         # set board cursor to top left of the view
         row_start = agent_location[1] - offset
         row_end = row_start + GameState.VIEW_DIM
@@ -157,10 +138,9 @@ class GameState(object):
 
 
     def sendMove(self, move, agent_location, agent_rotation):
-        # Keeps receiving messages from server until connection reset
-        # i.e. until game ends and server stops connection
-        self.sock.sendall(move)
 
+        # sends the chosen move to the bounty server
+        self.sock.sendall(move)
 
         try:
             received_data = ""
@@ -201,10 +181,7 @@ class GameState(object):
 
         i = 0
 
-        #print "string length is ", len(string)
         while (j < GameState.VIEW_SIZE):
-            #print "index of string is ", j
-            #self.current_view[i].append(string[j])
             if (j % GameState.VIEW_DIM  == 0 and j != 0):
                 i+=1
             self.current_view[i].append(string[j])
