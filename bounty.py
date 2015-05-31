@@ -394,9 +394,9 @@ class Board(object):
         while not frontier.empty():
             current = frontier.get()
             for adjacent in self.getAdjOnLand(current, has_axe, num_dynamite):  #TODO implement water
-                if parent[ adjacent[0] ][ adjacent[1] ] == UNEXPLORED:
+                if parent[ adjacent[1] ][ adjacent[0] ] == UNEXPLORED:
                     frontier.put(adjacent)
-                    parent[ adjacent[0] ][ adjacent[1] ] = current
+                    parent[ adjacent[1] ][ adjacent[0] ] = current
                     #print (adjacent[0], adjacent[1])
                     #print self.directionAdjacent(current, adjacent)
                     adj_map[ adjacent[1] ][ adjacent[0] ] = markers[self.directionAdjacent(current, adjacent)]
