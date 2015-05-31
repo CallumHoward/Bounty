@@ -124,8 +124,8 @@ class GameState(object):
         if self.turn_num <= GameState.MAX_MOVES:
             self.turn_num += 1
         else:
-            print 'Max number of turns reached'
-            #TODO handle exiting of game
+            print 'Game Lost.'
+            exit()
 
     def _orientate(self, rotation):
         rotated_view = self.current_view
@@ -186,7 +186,8 @@ class GameState(object):
                 i += 1
         except (SocketError, IndexError):
             self.sock.close()
-            # TODO add in Game Lost or Game Won message if needed for Agent file
+            self._nextTurn()
+            print "Game Won in", self.getTurn(), "moves."
             exit()
         #self.current_view = agent_view
 
