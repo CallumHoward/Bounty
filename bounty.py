@@ -61,10 +61,10 @@ class GameState(object):
         self.turn_num = 0
         self.board = Board()
         self.current_view = []  #TODO make sure string is converted to list of lists for rotation
-        print "args are:", sys.argv  #TODO port number
         # Establishes TCPIP connection on localhost at specified port
+        portNumber = int(sys.argv[2])
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        address = ('localhost', GameState.PORT)
+        address = ('localhost', portNumber)
         self.sock.connect(address)
 
         #receiving = True
