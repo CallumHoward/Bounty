@@ -83,7 +83,7 @@ class GameState(object):
             #    break
             i = 0
             #print "out of first loop"
-            received_data = received_data[:12]+"o"+received_data[12:]
+            received_data = received_data[:12]+"^"+received_data[12:]
             agent_view = ""
             while (i < 25):
              #   print "for i=", i, " object is |", received_data[i], "|"
@@ -157,8 +157,8 @@ class GameState(object):
                 self.board.board[row][col] = rotated_view[i][j]
 
         #for a in self.board.board:
-        for a in reversed(rotated_view):
-            print ' '.join(reversed(a))
+        for a in rotated_view:
+            print ' '.join(a)
         print 'ROTATION: ', agent_rotation
 
 
