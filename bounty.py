@@ -688,6 +688,14 @@ class Agent(object):
             self.removeWall()
         elif input == 'c':
             self.removeTree()
+        elif input == 'g':
+            self.moveLeft()
+        elif input == 'y':
+            self.moveUp()
+        elif input == 'h':
+            self.moveDown()
+        elif input == 'j':
+            self.moveRight()
         else:
             print 'can\'t move!'
             exit()
