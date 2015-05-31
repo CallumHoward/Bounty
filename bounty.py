@@ -17,7 +17,7 @@ class GameState(object):
 
     PORT = 31415
     MAX_MOVES = 10000
-    BOARD_DIM = 20#80  #TODO set to 80 before submitting
+    BOARD_DIM = 35#80  #TODO set to 80 before submitting
     BOARD_SIZE = BOARD_DIM * BOARD_DIM
     VIEW_DIM = 5
     VIEW_SIZE = VIEW_DIM * VIEW_DIM
@@ -57,13 +57,18 @@ class GameState(object):
         'right':    1
     }
 
-
     # Constructor method for GameState class
     def __init__(self):
         self.turn_num = 0
         self.board = Board()
         self.current_view = []
-        self.directory = {}
+
+        self.directory = {
+            'gold':     None,
+            'boat':     None,
+            'dynamite': [],
+            'axe':      None        
+        }
 
         # Establishes TCPIP connection on localhost at specified port
         portNumber = int(sys.argv[2])
@@ -131,7 +136,14 @@ class GameState(object):
         for i, row in enumerate(range(row_start, row_end)):
             for j, col in enumerate(range(col_start, col_end)):
                 self.board.board[row][col] = rotated_view[i][j]
-
+                if self.board.getLocation((i,j)) == self.FEATURES['gold']:
+                    self.setGoldLocation((row, col))
+                elif self.board.getLocation((i,j)) == self.FEATURES['axe']:
+                    self.setAxeLocation((row, col))   
+                elif self.board.getLocation((i,j)) == self.FEATURES['dynamite']:
+                    self.setDynamiteLocation((row, col))
+                elif self.board.getLocation((i,j)) == self.FEATURES['boat']:
+                    self.setBoatLocation((row, col))
 
     ### other methods
     def printBoard(self):
@@ -188,6 +200,23 @@ class GameState(object):
             self.current_view[i].append(string[j])
             j+=1
 
+    def setGoldLocation(self, location):
+        if self.directory['gold'] != None:
+            self.directory['gold'] = location
+
+    def setAxeLocation(self, location):
+        if self.directory['axe'] != None:
+            self.directory['axe'] = location
+
+    def setDynamiteLocation(self, location):
+        self.directory['dynamite'].append(location)
+
+    def setNoneBoatLocation(self):
+        self.directory['boat'] = None
+
+    def setBoatLocation(self, location):
+        if self.directory['boat'] != None:
+            self.directory['boat'] = location
 
 class Board(object):
     'Board class for internal representation of game board'
@@ -458,8 +487,8 @@ class Agent(object):
 
 
     def getGoldLocation(self):
-        assert(self.getHasGold())
         return self.state.directory['gold']
+
 
 
     ### setters
