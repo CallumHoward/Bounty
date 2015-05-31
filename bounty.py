@@ -338,15 +338,14 @@ class Board(object):
         max_path_length = GameState.BOARD_SIZE
         parent = self.bfs(origin)
         current = destination
-        side_length = 2 * GameState.BOARD_DIM
 
         #DEBUG
-        path_map = []
-        for i in range(side_length):
-            row = []
-            for j in range(side_length):
-                row.append(' ')
-            path_map.append(row)
+        path_map = self.board
+        #for i in range(side_length):
+        #    row = []
+        #    for j in range(side_length):
+        #        row.append(' ')
+        #    path_map.append(row)
 
         loop_count = 0
         while current != origin and loop_count < max_path_length:
@@ -355,10 +354,11 @@ class Board(object):
             path.append(self.directionAdjacent(current, prev))
             loop_count += 1
             #DEBUG
+            print path
             for direction in path:
-                path_map[ current[1] ][ current[0] ] = markers[direction],
+                path_map[ current[1] ][ current[0] ] = markers[direction]
             for row in path_map:
-                print ' '.join(str(r) for r in row)
+                print ' '.join(row)
             print '...'
             raw_input()
 
@@ -678,7 +678,6 @@ class Agent(object):
             self.moveForward()
         else:
             a = random.randint(-1,1)
-            print 'hello', a
             if a == 1:
                 self.turnLeft()
             else:
