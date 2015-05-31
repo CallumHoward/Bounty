@@ -261,7 +261,7 @@ class Board(object):
 
     # returns the contents of the location
     def getLocation(self, location):
-        return self.board[location[0]][location[1]]
+        return self.board[location[1]][location[0]]
 
     # returns adjacent locations that are in the map
     def getAdjacent(self, location):
@@ -581,6 +581,7 @@ class Agent(object):
 
     ### other methods
     def makeBestMove(self):
+        print 'Facing |' + self.state.board.getLocation(self._getFacing()) + '|'
         print 'Move: ',
         input = raw_input()
 
