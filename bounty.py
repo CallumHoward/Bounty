@@ -17,7 +17,7 @@ class GameState(object):
 
     PORT = 31415
     MAX_MOVES = 10000
-    BOARD_DIM = 10#80
+    BOARD_DIM = 10#80  #TODO set to 80 before submitting
     BOARD_SIZE = BOARD_DIM * BOARD_DIM
     VIEW_DIM = 5
     VIEW_SIZE = VIEW_DIM * VIEW_DIM
@@ -62,7 +62,8 @@ class GameState(object):
     def __init__(self):
         self.turn_num = 0
         self.board = Board()
-        self.current_view = [] 
+        self.current_view = []
+        self.directory = {}
 
         # Establishes TCPIP connection on localhost at specified port
         portNumber = int(sys.argv[2])
@@ -172,7 +173,7 @@ class GameState(object):
                 received_data += data_stream
             i = 0
             markers = ['^', '>', 'v', '<']
-            received_data = received_data[:12] + markers[agent_rotation] + received_data[12:] 
+            received_data = received_data[:12] + markers[agent_rotation] + received_data[12:]
             agent_view = ""
             while (i < GameState.VIEW_SIZE):
                 agent_view = agent_view+received_data[i]
@@ -355,7 +356,7 @@ class Board(object):
         return self.getLocation(location) == GameState.FEATURES['fog']
 
 
-    # returns a list of tuples containing coordinates
+    # returns a list of cardinal directions
     def shortestPath(self, origin, destination):
         path = []
         markers = ['^', '>', 'v', '<']
@@ -364,12 +365,13 @@ class Board(object):
         while current != origin:
             prev = current
             current = parent[ current[1] ][ current[0] ]
-            path.append(current)
-            print path
-            print markers[self.directionAdjacent(current, prev)]
-            raw_input('...')
+            path.append(self.directionAdjacent(current, prev))
 
-        return reversed(path)
+        for direction in path:
+            print markers[direction],
+        print
+
+        return path
 
 
     # Breadth First Search on what has been seen in internal representation of board
@@ -464,6 +466,11 @@ class Agent(object):
         return self.has_gold
 
 
+    def getGoldLocation(self):
+        assert(self.getHasGold())
+        return self.state.directory['gold']
+
+
     ### setters
     # Pass in True or False to set the value of isInBoat
     def setInBoat(self, value):
@@ -476,6 +483,10 @@ class Agent(object):
 
     def setHasGold(self):
         self.has_gold = True
+
+
+    def setGoldLocation(self, location):
+        self.state.directory['gold'] = location
 
 
     def gainDynamite(self):
@@ -585,6 +596,7 @@ class Agent(object):
                 self.gainDynamite()
             elif self.isFacingGold():
                 self.setHasGold()
+                self.setGoldLocation(self._getFacing())
             elif self.isFacingBoat():
                 self.setInBoat(True)
             elif self.isInBoat() and self.isFacingLand():
@@ -608,21 +620,36 @@ class Agent(object):
         #TODO can optimise steps taken
         while self.rotation != GameState.CARDINAL['east']:
             self.turnLeft()
-        self.moveForward()
+        if self.canMoveForward():
+            self.moveForward()
 
 
     def moveDown(self):
         #TODO can optimise steps taken
         while self.rotation != GameState.CARDINAL['south']:
             self.turnLeft()
-        self.moveForward()
+        if self.canMoveForward():
+            self.moveForward()
 
 
     def moveLeft(self):
         #TODO can optimise steps taken
         while self.rotation != GameState.CARDINAL['west']:
             self.turnLeft()
-        self.moveForward()
+        if self.canMoveForward():
+            self.moveForward()
+
+
+    def followDirection(self, direction):
+        if direction == GameState.CARDINAL['north']:
+            self.moveUp()
+        elif direction == GameState.CARDINAL['east']:
+            self.moveRight()
+        elif direction == GameState.CARDINAL['south']:
+            self.moveDown()
+        elif direction == GameState.CARDINAL['west']:
+            self.moveLeft()
+
 
 
     def removeTree(self):
@@ -653,6 +680,12 @@ class Agent(object):
 
     ### other methods
     def makeBestMove(self):
+        self.smartBot()
+        print 'FACING: |' + self.state.board.getLocation(self._getFacing()) + '|', '\t', self._getFacing()
+        time.sleep(0.05) #TODO remove before submitting
+
+
+    def dumbBot(self):
         if self.canMoveForward() and random.randint(-1,4):
             self.moveForward()
         else:
@@ -663,8 +696,15 @@ class Agent(object):
             else:
                 self.turnRight()
 
-        print 'FACING: |' + self.state.board.getLocation(self._getFacing()) + '|', '\t', self._getFacing()
-        time.sleep(0.05)
+
+    def smartBot(self):
+        if self.getHasGold():
+            # follow shortest path back to starting point
+            path = self.state.board.shortestPath(self.location, self.origin)
+            for direction in path:
+                self.followDirection(direction)
+        else:
+            self.dumbBot()
 
 
     def userControl(self):
@@ -678,12 +718,11 @@ class Agent(object):
             self.turnLeft()
         elif input == 'r':
             self.turnRight()
-        elif input == 's':
+        elif input == 's':  #DEBUG
             destination = self.state.board.getUp(self.location)
             destination = self.state.board.getUp(destination)
             destination = self.state.board.getLeft(destination)
-            print self.state.board.shortestPath(self.location, destination)
-            exit()
+            self.state.board.shortestPath(self.location, destination)
         elif input == 'b':
             self.removeWall()
         elif input == 'c':
