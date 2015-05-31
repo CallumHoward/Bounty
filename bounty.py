@@ -356,8 +356,14 @@ class Board(object):
 
 
     # returns a list of tuples containing coordinates
-    def shortestPath(self, (x1, y1), (x2, y2)):
-        return
+    def shortestPath(self, origin, destination):
+        path = []
+        parent = self.bfs(origin)
+        current = destination
+        while current != origin:
+            path.append(parent[ current[0] ][ current[1] ])
+
+        return reversed(path)
 
 
     # Breadth First Search on what has been seen in internal representation of board
@@ -366,12 +372,25 @@ class Board(object):
         frontier.put(origin)
         side_length = 2 * GameState.BOARD_DIM
         UNEXPLORED = (0, 0)
+        markers = ['^', '>', 'v', '<']
+        #markers = ['v', '<', '^', '>']
         # contains the location that bfs came from, otherwise UNEXPLORED
-        parent = [[UNEXPLORED] * side_length] * side_length #TODO worry
+        parent = []
+        for i in range(side_length):
+            row = []
+            for j in range(side_length):
+                row.append(UNEXPLORED)
+            parent.append(row)
+
+        adj_map = []
+        for i in range(side_length):
+            row = []
+            for j in range(side_length):
+                row.append(' ')
+            adj_map.append(row)
 
         has_axe = False  #TODO  implement these
         num_dynamite = 0
-        print 'ADJACENT:', self.getAdjOnLand(origin, has_axe, num_dynamite)
 
         while not frontier.empty():
             current = frontier.get()
@@ -379,14 +398,21 @@ class Board(object):
                 if parent[ adjacent[0] ][ adjacent[1] ] == UNEXPLORED:
                     frontier.put(adjacent)
                     parent[ adjacent[0] ][ adjacent[1] ] = current
+                    #print (adjacent[0], adjacent[1])
+                    #print self.directionAdjacent(current, adjacent)
+                    adj_map[ adjacent[1] ][ adjacent[0] ] = markers[self.directionAdjacent(current, adjacent)]
 
-        print parent
+        for line in adj_map:
+            print ' '.join(line)
+
+        return parent
 
 
     def printBoard(self):
         for i in self.board:
             print ' '.join(i)
-    
+
+
     def directionAdjacent(self, current_location, adjacent):
         # given two coordinates, return direction
         if self.getUp(current_location) == adjacent:
@@ -397,6 +423,7 @@ class Board(object):
             return GameState.CARDINAL['south']
         elif self.getRight(current_location) == adjacent:
             return GameState.CARDINAL['east']
+
 
 class Agent(object):
     'Agent class for agent of Bounty Game'
@@ -618,12 +645,15 @@ class Agent(object):
         elif input == 'r':
             self.turnRight()
         elif input == 's':
-            self.state.board.bfs(self.location)
+            destination = self.state.board.getUp(self.location)
+            destination = self.state.board.getUp(destination)
+            destination = self.state.board.getLeft(destination)
+            self.state.board.shortestPath(self.location, destination)
             raw_input('Enter to continue..')
         elif input == 'b':
             self.removeWall()
         elif input == 'c':
-            self.removeTree()            
+            self.removeTree()
         else:
             print 'can\'t move!'
             exit()
