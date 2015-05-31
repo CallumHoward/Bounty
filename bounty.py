@@ -379,8 +379,22 @@ class Board(object):
         frontier.put(origin)
         side_length = 2 * GameState.BOARD_DIM
         UNEXPLORED = (0, 0)
+        markers = ['^', '>', 'v', '<']
+        #markers = ['v', '<', '^', '>']
         # contains the location that bfs came from, otherwise UNEXPLORED
-        parent = [[UNEXPLORED] * side_length] * side_length #TODO worry
+        parent = []
+        for i in range(side_length):
+            row = []
+            for j in range(side_length):
+                row.append(UNEXPLORED)
+            parent.append(row)
+
+        adj_map = []
+        for i in range(side_length):
+            row = []
+            for j in range(side_length):
+                row.append(' ')
+            adj_map.append(row)
 
         has_axe = False  #TODO  implement these
         num_dynamite = 0
@@ -391,6 +405,12 @@ class Board(object):
                 if parent[ adjacent[0] ][ adjacent[1] ] == UNEXPLORED:
                     frontier.put(adjacent)
                     parent[ adjacent[0] ][ adjacent[1] ] = current
+                    #print (adjacent[0], adjacent[1])
+                    #print self.directionAdjacent(current, adjacent)
+                    adj_map[ adjacent[1] ][ adjacent[0] ] = markers[self.directionAdjacent(current, adjacent)]
+
+        for line in adj_map:
+            print ' '.join(line)
 
         return parent
 
@@ -632,10 +652,10 @@ class Agent(object):
         elif input == 'r':
             self.turnRight()
         elif input == 's':
-            destination = self.state.board.getUp(self.current_location)
+            destination = self.state.board.getUp(self.location)
             destination = self.state.board.getUp(destination)
             destination = self.state.board.getLeft(destination)
-            self.state.board.shortestPath(self.current_location, self.state.board.getUp(self.current_location))
+            self.state.board.shortestPath(self.location, destination)
             raw_input('Enter to continue..')
         elif input == 'b':
             self.removeWall()
