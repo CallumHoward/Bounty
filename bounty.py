@@ -139,7 +139,6 @@ class GameState(object):
         # rotate current view to universal orientation
         rotated_view = self._orientate(agent_rotation)
 
-        # Change VIEW_SIZE to 29 - since it must include the newline characters
         #assert(len(rotated_view) == GameState.VIEW_SIZE)  #TODO remove before submitting
 
         # use agent location to determin which rows and columns of the board to update
@@ -196,6 +195,9 @@ class GameState(object):
         #self.current_view = agent_view
 
         self._convertString2List(agent_view)
+
+        # Rotation is incorrect at this point, because you send previous rotation
+        # before updating to new one
 
         # update internal representation of the board
         #TODO support same args as agent.java, but fall back on defaults
@@ -577,7 +579,8 @@ class Agent(object):
         self.state.sendMove(GameState.MOVES['right'], self.location, self.rotation)
         self.rotation += GameState.DIRECTIONS['right']
         self.rotation %= len(GameState.CARDINAL)
-
+        #print "length of cardinal is ", len(GameState.CARDINAL)
+        print "rotation is ", self.rotation
 
     # location is a tuple of form (x, y)
     def getBoardLocation(self, location):
@@ -595,6 +598,7 @@ class Agent(object):
             self.turnLeft()
         elif input == 'r':
             self.turnRight()
+            #print "rotation after call is ", self.rotation
         else:
             print 'can\'t move!'
             exit()
