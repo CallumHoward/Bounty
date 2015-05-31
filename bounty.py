@@ -368,8 +368,14 @@ class Board(object):
 
 
     # returns a list of tuples containing coordinates
-    def shortestPath(self, (x1, y1), (x2, y2)):
-        return
+    def shortestPath(self, origin, destination):
+        path = []
+        parent = self.bfs(origin)
+        current = destination
+        while current != origin:
+            path.append(parent[ current[0] ][ current[1] ])
+
+        return reversed(path)
 
 
     # Breadth First Search on what has been seen in internal representation of board
@@ -383,7 +389,6 @@ class Board(object):
 
         has_axe = False  #TODO  implement these
         num_dynamite = 0
-        print 'ADJACENT:', self.getAdjOnLand(origin, has_axe, num_dynamite)
 
         while not frontier.empty():
             current = frontier.get()
@@ -392,7 +397,7 @@ class Board(object):
                     frontier.put(adjacent)
                     parent[ adjacent[0] ][ adjacent[1] ] = current
 
-        print parent
+        return parent
 
 
     def printBoard(self):
