@@ -69,8 +69,6 @@ class GameState(object):
         address = ('localhost', portNumber)
         self.sock.connect(address)
 
-        #receiving = True
-        #while receiving:
         try:
             received_data = ""
             data_stream = ""
@@ -81,10 +79,7 @@ class GameState(object):
                     break
                 received_data += data_stream
               #  print "len of received is ", len(received_data)
-            #if receiving == False:
-            #    break
             i = 0
-            #print "out of first loop"
             received_data = received_data[:12]+"^"+received_data[12:]
             agent_view = ""
             while (i < 25):
@@ -403,8 +398,17 @@ class Board(object):
     def printBoard(self):
         for i in self.board:
             print ' '.join(i)
-
-
+    
+    def directionAdjacent(self, current_location, adjacent):
+        # given two coordinates, return direction
+        if getUp(current_location) == adjacent:
+            return GameState.CARDINAL['north']
+        elif getLeft(current_location) == adjacent:
+            return GameState.CARDINAL['west']
+        elif getDown(current_location) == adjacent:
+            return GameState.CARDINAL['south']
+        elif getRight(current_location) == adjacent):
+            return GameState.CARDINAL['east']
 
 class Agent(object):
     'Agent class for agent of Bounty Game'
@@ -625,9 +629,13 @@ class Agent(object):
             self.turnLeft()
         elif input == 'r':
             self.turnRight()
-        elif input == 'b':
+        elif input == 's':
             self.state.board.bfs(self.location)
             raw_input('Enter to continue..')
+        elif input == 'b':
+            self.removeWall()
+        elif input == 'c':
+            self.removeTree()            
         else:
             print 'can\'t move!'
             exit()
