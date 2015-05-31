@@ -398,7 +398,8 @@ class Board(object):
     def printBoard(self):
         for i in self.board:
             print ' '.join(i)
-    
+
+
     def directionAdjacent(self, current_location, adjacent):
         # given two coordinates, return direction
         if getUp(current_location) == adjacent:
@@ -407,8 +408,9 @@ class Board(object):
             return GameState.CARDINAL['west']
         elif getDown(current_location) == adjacent:
             return GameState.CARDINAL['south']
-        elif getRight(current_location) == adjacent):
+        elif getRight(current_location) == adjacent:
             return GameState.CARDINAL['east']
+
 
 class Agent(object):
     'Agent class for agent of Bounty Game'
@@ -630,12 +632,15 @@ class Agent(object):
         elif input == 'r':
             self.turnRight()
         elif input == 's':
-            self.state.board.bfs(self.location)
+            destination = self.state.board.getUp(self.current_location)
+            destination = self.state.board.getUp(destination)
+            destination = self.state.board.getLeft(destination)
+            self.state.board.shortestPath(self.current_location, self.state.board.getUp(self.current_location))
             raw_input('Enter to continue..')
         elif input == 'b':
             self.removeWall()
         elif input == 'c':
-            self.removeTree()            
+            self.removeTree()
         else:
             print 'can\'t move!'
             exit()
