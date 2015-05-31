@@ -83,7 +83,7 @@ class GameState(object):
             #    break
             i = 0
             #print "out of first loop"
-            received_data = received_data[:12]+"^"+received_data[12:]
+            received_data = received_data[:12]+"o"+received_data[12:]
             agent_view = ""
             while (i < 25):
              #   print "for i=", i, " object is |", received_data[i], "|"
@@ -139,12 +139,6 @@ class GameState(object):
         # rotate current view to universal orientation
         rotated_view = self._orientate(agent_rotation)
 
-        #print 'length of current_view'
-        #print len(self.current_view)
-
-        #print 'length of rotated_view'
-        #print len(rotated_view)
-
         # Change VIEW_SIZE to 29 - since it must include the newline characters
         #assert(len(rotated_view) == GameState.VIEW_SIZE)  #TODO remove before submitting
 
@@ -163,8 +157,9 @@ class GameState(object):
                 self.board.board[row][col] = rotated_view[i][j]
 
         #for a in self.board.board:
-        #for a in rotated_view:
-            #print ''.join(a)
+        for a in reversed(rotated_view):
+            print ' '.join(a)
+        print 'ROTATION: ', agent_rotation
 
 
     ### other methods
@@ -187,7 +182,8 @@ class GameState(object):
                     break
                 received_data += data_stream
             i = 0
-            received_data = received_data[:12]+"^"+received_data[12:] #TODO ^ is not going to be rotated properly
+            markers = ['^', '>', 'v', '<']
+            received_data = received_data[:12] + markers[agent_rotation] + received_data[12:] #TODO ^ is not going to be rotated properly
             agent_view = ""
             #print "len of thing is", len(received_data)
             while (i < GameState.VIEW_SIZE):
@@ -395,8 +391,9 @@ class Board(object):
 
 
     def printBoard(self):
-        for i in self.board:
-           print ' '.join(i)
+        #for i in self.board:
+        #  print ' '.join(i)
+        pass
 
 
 
@@ -589,10 +586,15 @@ class Agent(object):
 
     ### other methods
     def makeBestMove(self):
-        if self.canMoveForward():
-            best_move = GameState.MOVES['forward']
-            print 'sending forward....'
-            self.state.sendMove(best_move, self.location, self.rotation)
+        print 'Move: ',
+        input = raw_input()
+
+        if input == 'f' and self.canMoveForward():
+            self.moveForward()
+        elif input == 'l':
+            self.turnLeft()
+        elif input == 'r':
+            self.turnRight()
         else:
             print 'can\'t move!'
             exit()
