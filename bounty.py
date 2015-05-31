@@ -396,13 +396,13 @@ class Board(object):
     
     def directionAdjacent(self, current_location, adjacent):
         # given two coordinates, return direction
-        if getUp(current_location) == adjacent:
+        if self.getUp(current_location) == adjacent:
             return GameState.CARDINAL['north']
-        elif getLeft(current_location) == adjacent:
+        elif self.getLeft(current_location) == adjacent:
             return GameState.CARDINAL['west']
-        elif getDown(current_location) == adjacent:
+        elif self.getDown(current_location) == adjacent:
             return GameState.CARDINAL['south']
-        elif getRight(current_location) == adjacent):
+        elif self.getRight(current_location) == adjacent:
             return GameState.CARDINAL['east']
 
 class Agent(object):
