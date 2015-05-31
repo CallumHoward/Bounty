@@ -365,7 +365,7 @@ class Board(object):
     # returns a list of tuples containing coordinates
     def shortestPath(self, origin, destination):
         path = []
-        markers = ['v', '<', '^', '>']
+        markers = ['^', '>', 'v', '<']
         parent = self.bfs(origin)
         current = destination
         while current != origin:
@@ -602,6 +602,34 @@ class Agent(object):
             #self.location = self.state.board.getUp(self.location) #WRONG
             self.location = self._getFacing()
             self.state.sendMove(GameState.MOVES['forward'], self.location, self.rotation)
+
+
+    def moveUp(self):
+        #TODO can optimise steps taken
+        while self.rotation != GameState.CARDINAL['north']:
+            self.turnLeft()
+        self.moveForward()
+
+
+    def moveRight(self):
+        #TODO can optimise steps taken
+        while self.rotation != GameState.CARDINAL['east']:
+            self.turnLeft()
+        self.moveForward()
+
+
+    def moveDown(self):
+        #TODO can optimise steps taken
+        while self.rotation != GameState.CARDINAL['south']:
+            self.turnLeft()
+        self.moveForward()
+
+
+    def moveLeft(self):
+        #TODO can optimise steps taken
+        while self.rotation != GameState.CARDINAL['west']:
+            self.turnLeft()
+        self.moveForward()
 
 
     def removeTree(self):
