@@ -15,7 +15,7 @@ class GameState(object):
 
     PORT = 31415
     MAX_MOVES = 10000
-    BOARD_DIM = 80
+    BOARD_DIM = 20#80
     BOARD_SIZE = BOARD_DIM * BOARD_DIM
     VIEW_DIM = 5
     VIEW_SIZE = VIEW_DIM * VIEW_DIM
@@ -156,15 +156,11 @@ class GameState(object):
         col_start = agent_location[1] - offset
         col_end = col_start + GameState.VIEW_DIM
 
-        #debug
-        # store current view into board row by row
-
+        #DEBUG
+        # store current view into board row by row, col by col
         for i, row in enumerate(range(row_start, row_end)):
             for j, col in enumerate(range(col_start, col_end)):
                 self.board.board[row][col] = rotated_view[i][j]
-                #print self.board.board[row][col],
-                print (i, row),
-            print
 
         #for a in self.board.board:
         #for a in rotated_view:
@@ -191,7 +187,7 @@ class GameState(object):
                     break
                 received_data += data_stream
             i = 0
-            received_data = received_data[:12]+"^"+received_data[12:]
+            received_data = received_data[:12]+"^"+received_data[12:] #TODO ^ is not going to be rotated properly
             agent_view = ""
             #print "len of thing is", len(received_data)
             while (i < GameState.VIEW_SIZE):
@@ -231,6 +227,7 @@ class GameState(object):
             self.current_view[i].append(string[j])
             j+=1
 
+
 class Board(object):
     'Board class for internal representation of game board'
 
@@ -240,7 +237,14 @@ class Board(object):
         # make internal board twice as big to guarantee enough space
         side_length = 2 * GameState.BOARD_DIM
         # board is a list of lists initialised to fog
-        self.board = [[GameState.FOG_CHAR] * side_length] * side_length
+        self.board = []
+        for i in range(side_length):
+            row = []
+            for j in range(side_length):
+                row.append(GameState.FEATURES['fog'])
+            self.board.append(row)
+
+
 
     # location is a tuple of form (x, y)
     # returns coordinate above
@@ -391,9 +395,8 @@ class Board(object):
 
 
     def printBoard(self):
-        #for i in self.board:
-        #   print ''.join(i)
-        pass
+        for i in self.board:
+           print ' '.join(i)
 
 
 
