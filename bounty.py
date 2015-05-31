@@ -149,16 +149,10 @@ class GameState(object):
         col_start = agent_location[1] - offset
         col_end = col_start + GameState.VIEW_DIM
 
-        #DEBUG
         # store current view into board row by row, col by col
         for i, row in enumerate(range(row_start, row_end)):
             for j, col in enumerate(range(col_start, col_end)):
                 self.board.board[row][col] = rotated_view[i][j]
-
-        #for a in self.board.board:
-        for a in rotated_view:
-            print ' '.join(a)
-        print 'ROTATION: ', agent_rotation
 
 
     ### other methods
@@ -203,7 +197,7 @@ class GameState(object):
         #TODO support same args as agent.java, but fall back on defaults
         self._storeView(agent_location, agent_rotation)
         self._nextTurn()
-        self.board.printBoard()
+        self.printBoard()
 
     def _convertString2List(self, string):
         i = 0
@@ -393,9 +387,8 @@ class Board(object):
 
 
     def printBoard(self):
-        #for i in self.board:
-        #  print ' '.join(i)
-        pass
+        for i in self.board:
+            print ' '.join(i)
 
 
 
@@ -553,10 +546,15 @@ class Agent(object):
             elif self.isInBoat() and self.isFacingLand():
                 self.setInBoat(False)
 
+            #DEBUG
+            print 'LOCATION before:\t', self.location
+
             # note: GameState.sendMove() will update internal representation of the board
             # update agent location
-            self.location = self.state.board.getUp(self.location)
+            #self.location = self.state.board.getUp(self.location) #WRONG
+            self.location = self._getFacing()
             self.state.sendMove(GameState.MOVES['forward'], self.location, self.rotation)
+            print 'LOCATION after:  \t', self.location
 
 
     def removeTree(self):
@@ -570,17 +568,15 @@ class Agent(object):
 
 
     def turnLeft(self):
-        self.state.sendMove(GameState.MOVES['left'], self.location, self.rotation)
         self.rotation += GameState.DIRECTIONS['left']
         self.rotation %= len(GameState.CARDINAL)
+        self.state.sendMove(GameState.MOVES['left'], self.location, self.rotation)
 
 
     def turnRight(self):
-        self.state.sendMove(GameState.MOVES['right'], self.location, self.rotation)
         self.rotation += GameState.DIRECTIONS['right']
         self.rotation %= len(GameState.CARDINAL)
-        #print "length of cardinal is ", len(GameState.CARDINAL)
-        print "rotation is ", self.rotation
+        self.state.sendMove(GameState.MOVES['right'], self.location, self.rotation)
 
     # location is a tuple of form (x, y)
     def getBoardLocation(self, location):
