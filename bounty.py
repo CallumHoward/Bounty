@@ -378,7 +378,7 @@ class Board(object):
         side_length = 2 * GameState.BOARD_DIM
         UNEXPLORED = (0, 0)
         # contains the location that bfs came from, otherwise UNEXPLORED
-        parent = [[UNEXPLORED] * side_length] * side_length
+        parent = [[UNEXPLORED] * side_length] * side_length #TODO worry
 
         has_axe = False  #TODO  implement these
         num_dynamite = 0
