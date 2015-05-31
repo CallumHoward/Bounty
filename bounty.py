@@ -204,8 +204,6 @@ class Board(object):
                 row.append(GameState.FEATURES['fog'])
             self.board.append(row)
 
-
-
     # location is a tuple of form (x, y)
     # returns coordinate above
     def getUp(self, location):
@@ -630,7 +628,9 @@ class Agent(object):
 
     ### other methods
     def makeBestMove(self):
-        if self.canMoveForward() and random.randint(-1,4):
+        if self.canRemoveTree():
+            self.removeTree()
+        elif self.canMoveForward() and random.randint(-1,4):
             self.moveForward()
         else:
             a = random.randint(-1,1)
