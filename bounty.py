@@ -624,9 +624,13 @@ class Agent(object):
             self.turnLeft()
         elif input == 'r':
             self.turnRight()
-        elif input == 'b':
+        elif input == 's':
             self.state.board.bfs(self.location)
             raw_input('Enter to continue..')
+        elif input == 'b':
+            self.removeWall()
+        elif input == 'c':
+            self.removeTree()            
         else:
             print 'can\'t move!'
             exit()
