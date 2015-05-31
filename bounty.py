@@ -9,7 +9,6 @@ import socket
 import sys
 from socket import error as SocketError
 from Queue import Queue
-#import time
 import random
 
 class GameState(object):
@@ -17,7 +16,7 @@ class GameState(object):
 
     PORT = 31415
     MAX_MOVES = 10000
-    BOARD_DIM = 35#80  #TODO set to 80 before submitting
+    BOARD_DIM = 80
     BOARD_SIZE = BOARD_DIM * BOARD_DIM
     VIEW_DIM = 5
     VIEW_SIZE = VIEW_DIM * VIEW_DIM
@@ -67,7 +66,7 @@ class GameState(object):
             'gold':     None,
             'boat':     None,
             'dynamite': [],
-            'axe':      None        
+            'axe':      None
         }
 
         # Establishes TCPIP connection on localhost at specified port
@@ -139,7 +138,7 @@ class GameState(object):
                 if self.board.getLocation((i,j)) == self.FEATURES['gold']:
                     self.setGoldLocation((row, col))
                 elif self.board.getLocation((i,j)) == self.FEATURES['axe']:
-                    self.setAxeLocation((row, col))   
+                    self.setAxeLocation((row, col))
                 elif self.board.getLocation((i,j)) == self.FEATURES['dynamite']:
                     self.setDynamiteLocation((row, col))
                 elif self.board.getLocation((i,j)) == self.FEATURES['boat']:
@@ -363,18 +362,9 @@ class Board(object):
     # returns a list of cardinal directions
     def shortestPath(self, origin, destination):
         path = []
-        markers = ['^', '>', 'v', '<']
         max_path_length = GameState.BOARD_SIZE
         parent = self.bfs(origin)
         current = destination
-
-        #DEBUG
-        path_map = list(self.board)
-        #for i in range(side_length):
-        #    row = []
-        #    for j in range(side_length):
-        #        row.append(' ')
-        #    path_map.append(row)
 
         loop_count = 0
         while current != origin and loop_count < max_path_length:
@@ -382,14 +372,6 @@ class Board(object):
             current = parent[ current[1] ][ current[0] ]
             path.append(self.directionAdjacent(current, prev))
             loop_count += 1
-            #DEBUG
-            print path
-            for direction in path:
-                path_map[ current[1] ][ current[0] ] = markers[direction]
-            for row in path_map:
-                print ' '.join(row)
-            print '...'
-            raw_input()
 
         return list(reversed(path))
 
@@ -400,8 +382,8 @@ class Board(object):
         frontier.put(origin)
         side_length = 2 * GameState.BOARD_DIM
         UNEXPLORED = (0, 0)
-        #markers = ['^', '>', 'v', '<']
         markers = ['v', '<', '^', '>']
+
         # contains the location that bfs came from, otherwise UNEXPLORED
         parent = []
         for i in range(side_length):
@@ -426,8 +408,6 @@ class Board(object):
                 if parent[ adjacent[1] ][ adjacent[0] ] == UNEXPLORED:
                     frontier.put(adjacent)
                     parent[ adjacent[1] ][ adjacent[0] ] = current
-                    #print (adjacent[0], adjacent[1])
-                    #print self.directionAdjacent(current, adjacent)
                     adj_map[ adjacent[1] ][ adjacent[0] ] = markers[self.directionAdjacent(current, adjacent)]
 
         for line in adj_map:
@@ -696,10 +676,6 @@ class Agent(object):
     ### other methods
     def makeBestMove(self):
         self.smartBot()
-        print 'FACING: |' + self.state.board.getLocation(self._getFacing()) + '|', '\t', self._getFacing()
-        #time.sleep(0.05) #TODO remove before submitting
-        #print '..'
-        #raw_input()
 
 
     def dumbBot(self):
