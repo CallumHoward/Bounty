@@ -381,9 +381,9 @@ class Board(object):
             loop_count += 1
             #DEBUG
             for direction in path:
-                path_map[ prev[1] ][ prev[0] ] = markers[direction],
+                path_map[ current[1] ][ current[0] ] = markers[direction],
             for row in path_map:
-                print ''.join(row)
+                print ' '.join(str(r) for r in row)
             print '...'
             raw_input()
 
@@ -564,21 +564,16 @@ class Agent(object):
 
     def canMoveForward(self):
         if self.isFacingLand():
-            print 'LAND'
             return True
         if self.isFacingAxe():
-            print 'AXE'
             return True
         if self.isFacingDynamite():
-            print 'DYNAMITE'
             return True
         if self.isFacingGold():
-            print 'GOLD'
             return True
         if self.isFacingBoat():
             return True
         if self.isInBoat():
-            print 'IM IN A BOAT'
             if self.isFacingWater():
                 return True
             if self.isFacingLand():
