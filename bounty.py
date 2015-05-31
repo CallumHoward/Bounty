@@ -9,6 +9,7 @@ import socket
 import sys
 from socket import error as SocketError
 import Queue
+import time
 
 class GameState(object):
     'GameState class stores state of Bounty game'
@@ -410,7 +411,7 @@ class Agent(object):
 
     ### getters
     def isInBoat(self):
-        return self.isInBoat
+        return self.is_in_boat
 
 
     def getNumDynamite(self):
@@ -498,16 +499,21 @@ class Agent(object):
 
     def canMoveForward(self):
         if self.isFacingLand():
+            print 'LAND'
             return True
         if self.isFacingAxe():
+            print 'AXE'
             return True
         if self.isFacingDynamite():
+            print 'DYNAMITE'
             return True
         if self.isFacingGold():
+            print 'GOLD'
             return True
         if self.isFacingBoat():
             return True
         if self.isInBoat():
+            print 'IM IN A BOAT'
             if self.isFacingWater():
                 return True
             if self.isFacingLand():
@@ -581,7 +587,19 @@ class Agent(object):
 
     ### other methods
     def makeBestMove(self):
-        print 'Facing |' + self.state.board.getLocation(self._getFacing()) + '|'
+        if self.canMoveForward():
+            self.moveForward()
+        else:
+            self.turnLeft()
+
+        print 'FACING: |' + self.state.board.getLocation(self._getFacing()) + '|', '\t', self._getFacing()
+        time.sleep(1)
+
+
+    def userControl(self):
+        print 'FACING: |' + self.state.board.getLocation(self._getFacing()) + '|', '\t', self._getFacing()
+        a = self.isInBoat()
+        print 'in boat?', a
         print 'Move: ',
         input = raw_input()
 
