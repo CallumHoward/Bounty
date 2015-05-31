@@ -158,7 +158,7 @@ class GameState(object):
 
         #for a in self.board.board:
         for a in reversed(rotated_view):
-            print ' '.join(a)
+            print ' '.join(reversed(a))
         print 'ROTATION: ', agent_rotation
 
 
@@ -400,7 +400,7 @@ class Board(object):
 class Agent(object):
     'Agent class for agent of Bounty Game'
 
-    INIT_ROTATION = 0
+    INIT_ROTATION = 0  #change this
 
     def __init__(self):
         self.state = GameState()
