@@ -144,9 +144,9 @@ class GameState(object):
         # use agent location to determin which rows and columns of the board to update
         offset = int(math.floor(GameState.VIEW_DIM / 2))  # floor because of zero indexing
         # set board cursor to top left of the view
-        row_start = agent_location[0] - offset
+        row_start = agent_location[1] - offset
         row_end = row_start + GameState.VIEW_DIM
-        col_start = agent_location[1] - offset
+        col_start = agent_location[0] - offset
         col_end = col_start + GameState.VIEW_DIM
 
         # store current view into board row by row, col by col
@@ -546,15 +546,11 @@ class Agent(object):
             elif self.isInBoat() and self.isFacingLand():
                 self.setInBoat(False)
 
-            #DEBUG
-            print 'LOCATION before:\t', self.location
-
             # note: GameState.sendMove() will update internal representation of the board
             # update agent location
             #self.location = self.state.board.getUp(self.location) #WRONG
             self.location = self._getFacing()
             self.state.sendMove(GameState.MOVES['forward'], self.location, self.rotation)
-            print 'LOCATION after:  \t', self.location
 
 
     def removeTree(self):
