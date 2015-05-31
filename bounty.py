@@ -10,6 +10,7 @@ import sys
 from socket import error as SocketError
 import Queue
 import time
+import random
 
 class GameState(object):
     'GameState class stores state of Bounty game'
@@ -587,13 +588,18 @@ class Agent(object):
 
     ### other methods
     def makeBestMove(self):
-        if self.canMoveForward():
+        if self.canMoveForward() and random.randint(-1,1):
             self.moveForward()
         else:
-            self.turnLeft()
+            a = random.randint(-1,1)
+            print 'hello', a
+            if a == 1:
+                self.turnLeft()
+            else:
+                self.turnRight()
 
         print 'FACING: |' + self.state.board.getLocation(self._getFacing()) + '|', '\t', self._getFacing()
-        time.sleep(1)
+        time.sleep(0.2)
 
 
     def userControl(self):
