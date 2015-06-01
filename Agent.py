@@ -3,6 +3,7 @@
 import bounty
 import sys
 #import time
+import random
 
 def main():
     if len(sys.argv) != 3 or sys.argv[1] != "-p":
@@ -19,31 +20,31 @@ def main():
     agent.state.printBoard()
 
     while agent.state.getTurn() <= bounty.GameState.MAX_MOVES:
-        agent.makeBestMove()
-        #agent.userControl()
+        makeBestMove(agent)
+        #userControl()
 
-def makeBestMove(self):
-    self.smartBot()
-    #print 'FACING: |' + self.state.board.getLocation(self._getFacing()) + '|', '\t', self._getFacing()
+def makeBestMove(agent):
+    smartBot(agent)
+    #print 'FACING: |' + agent.state.board.getLocation(agent._getFacing()) + '|', '\t', agent._getFacing()
     #time.sleep(0.05) #TODO remove before submitting
     #print '..'
     #raw_input()
 
 
-def dumbBot(self):
-    if self.canRemoveTree():
-        self.removeTree()
-    elif self.canMoveForward() and random.randint(-1,4):
+def dumbBot(agent):
+    if agent.canRemoveTree():
+        agent.removeTree()
+    elif agent.canMoveForward() and random.randint(-1,4):
         agent.moveForward()
     else:
         a = random.randint(-1,1)
         if a == 1:
             agent.turnLeft()
         else:
-            self.turnRight()
+            agent.turnRight()
 
 
-def smartBot(self):
+def smartBot(agent):
     if agent.getHasGold():
         # follow shortest path back to starting point
         path = agent.state.board.getShortestPath(agent.location, agent.origin, agent.getHasAxe(), agent.getNumDynamite())
@@ -85,16 +86,16 @@ def smartBot(self):
             agent.followPath(path)
             agent.chopTree()
 
-    dumbBot()
+    dumbBot(agent)
 
-def exploreBot():
+def exploreBot(agent):
     # bfs to nearest unexplored location
     destination = agent.state.board.getNearestUnexplored()
     path = agent.state.board.getShortestPath(agent.location, destination, agent.getHasAxe(), agent.getNumDynamite())
     agent.followPath(path)
 
 
-def userControl():
+def userControl(agent):
     print 'FACING: |' + agent.state.board.getLocation(agent._getFacing()) + '|', '\t', agent._getFacing()
     print 'Move: ',
     input = raw_input()
@@ -108,20 +109,20 @@ def userControl():
     elif input == 's':  #DEBUG
         destination = agent.state.board.getUp(agent.location)
         destination = agent.state.board.getUp(destination)
-        destination = self.state.board.getLeft(destination)
-        self.state.board.getShortestPath(self.location, destination, self.getHasAxe(), self.getNumDynamite())
+        destination = agent.state.board.getLeft(destination)
+        agent.state.board.getShortestPath(agent.location, destination, agent.getHasAxe(), agent.getNumDynamite())
     elif input == 'b':
-        self.removeWall()
+        agent.removeWall()
     elif input == 'c':
-        self.removeTree()
+        agent.removeTree()
     elif input == 'g':
-        self.moveLeft()
+        agent.moveLeft()
     elif input == 'y':
-        self.moveUp()
+        agent.moveUp()
     elif input == 'h':
-        self.moveDown()
+        agent.moveDown()
     elif input == 'j':
-        self.moveRight()
+        agent.moveRight()
     else:
         print 'can\'t move!'
         exit()
