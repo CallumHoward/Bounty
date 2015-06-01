@@ -774,11 +774,24 @@ class Agent(object):
             path = self.state.board.shortestPath(self.location, self.state.getAxeLocation())
             self.followPath(path)
 
+        # collect any dynamite that can be seen
+        if self.state.getDynamiteLocations():
+            print 'LOOKING FOR DYNAMITE TO COLLECT'
+            raw_input()
+            for dynamite in self.state.getDynamiteLocations():
+                # if path to the location can be found, follow path
+                path = self.sate.board.shortestPath(self.location, dynamite)
+                self.followPath(path)
+
+
         # chop down all the trees
         if self.getHasAxe() and self.state.getTreeLocations():
-            # if path to the location can be found, follow path
-            path = self.sate.board.shortestPath(self.location, self.state.getTreeLocations())
-            self.followPath(path)
+            print 'LOOKING FOR TREES TO CHOP'
+            raw_input()
+            for tree in self.state.getTreeLocations():
+                # if path to the location can be found, follow path
+                path = self.sate.board.shortestPath(self.location, tree)
+                self.followPath(path)
 
         self.dumbBot()
 
