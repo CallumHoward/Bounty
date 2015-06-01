@@ -88,6 +88,7 @@ def main():
         makeBestMove(agent)
         #userControl()
 
+
 def makeBestMove(agent):
     smartBot(agent)
     #print 'FACING: |' + agent.state.board.getLocation(agent._getFacing()) + '|', '\t', agent._getFacing()
@@ -99,7 +100,11 @@ def makeBestMove(agent):
 def dumbBot(agent):
     if agent.canRemoveTree():
         agent.removeTree()
-    elif agent.canMoveForward() and random.randint(-1,4):
+    elif agent.canRemoveWall() and not random.randint(-1, 20):
+        agent.agentLog('BLASTING WALL')
+        raw_input()
+        agent.removeWall()
+    elif agent.canMoveForward() and random.randint(-1,3):
         agent.moveForward()
     else:
         a = random.randint(-1,1)
@@ -153,13 +158,19 @@ def smartBot(agent):
             agent.followPath(path)
             agent.removeTree()
 
+    #exploreBot(agent)
     dumbBot(agent)
+
 
 def exploreBot(agent):
     # bfs to nearest unexplored location
     destination = agent.state.board.getNearestUnexplored()
-    path = agent.state.board.getShortestPath(agent.location, destination, agent.getHasAxe(), agent.getNumDynamite())
-    agent.followPath(path)
+    if destination:
+        agent.agentLog('EXPLORING')
+        path = agent.state.board.getShortestPath(agent.location, destination, agent.getHasAxe(), agent.getNumDynamite())
+        agent.followPath(path)
+    else:
+        dumbBot(agent)
 
 
 def userControl(agent):

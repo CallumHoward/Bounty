@@ -66,7 +66,7 @@ class GameState(object):
 
         self.directory = {
             'gold':     None,
-            'boat':     None,
+            'boat':     [],
             'dynamite': [],
             'axe':      None,
             'tree':     []
@@ -152,7 +152,7 @@ class GameState(object):
                     if (col, row) not in self.directory['tree']:
                         self.setTreeLocation((col, row))
                 elif self.board.getLocation((col, row)) == GameState.FEATURES['boat']:
-                    if self.directory['boat'] == None:
+                    if (col, row) not in self.directory['boat']:
                         self.setBoatLocation((col, row))
                 #print " location check in", self.board.getLocation((col, row))
 
@@ -231,12 +231,11 @@ class GameState(object):
     def setDynamiteLocation(self, location):
         self.directory['dynamite'].append(location)
 
-    def setNoneBoatLocation(self):
-        self.directory['boat'] = None
+    def setNoneBoatLocation(self, location):
+        self.directory['boat'].remove(location)
 
     def setBoatLocation(self, location):
-        if self.directory['boat'] == None:
-            self.directory['boat'] = location
+        self.directory['boat'].append(location)
 
     def removeDynamiteFromList(self, location):
         self.directory['dynamite'].remove(location)
@@ -510,6 +509,8 @@ class Agent(object):
         self.has_axe = False
         self.has_gold = False
 
+        self.dumbCounter = 0
+
         # clear log file
         self.agentLog('\n--------\n')
 
@@ -656,7 +657,7 @@ class Agent(object):
                 self.setHasGold()
                 self.state.setNoneGoldLocation()
             elif self.isFacingBoat():
-                self.state.setNoneBoatLocation()
+                self.state.setNoneBoatLocation(self._getFacing())
                 self.setInBoat(True)
             elif self.isInBoat() and self.isFacingLand():
                 self.state.setBoatLocation(self.location)
@@ -725,6 +726,7 @@ class Agent(object):
     def removeWall(self):
         if self.canRemoveWall():
             self.state.sendMove(GameState.MOVES['blast'], self.location, self.rotation)
+            self.expendDynamite()
 
 
     def turnLeft(self):
