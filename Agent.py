@@ -2,7 +2,6 @@
 
 import bounty
 import sys
-import os
 #import time
 
 def main():
@@ -16,9 +15,6 @@ def main():
         print "Usage: Agent -p <portnumber>"
         return
 
-    os.remove("agentlog.txt") 
-
-    #TODO - pass the port to the agent class
     agent = bounty.Agent()
     agent.state.printBoard()
 

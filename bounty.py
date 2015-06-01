@@ -267,6 +267,9 @@ class Board(object):
 
     START_LOCATION = (GameState.BOARD_DIM, GameState.BOARD_DIM)
 
+    # clear log file
+    os.remove("agent.log")
+
     def __init__(self):
         # make internal board twice as big to guarantee enough space
         side_length = 2 * GameState.BOARD_DIM
@@ -414,11 +417,6 @@ class Board(object):
 
         #DEBUG
         path_map = copy.deepcopy(self.board)
-        #for i in range(side_length):
-        #    row = []
-        #    for j in range(side_length):
-        #        row.append(' ')
-        #    path_map.append(row)
 
         loop_count = 0
         while current != origin and loop_count < max_path_length:
@@ -460,12 +458,7 @@ class Board(object):
                 row.append(UNEXPLORED)
             parent.append(row)
 
-        adj_map = []
-        for i in range(side_length):
-            row = []
-            for j in range(side_length):
-                row.append(' ')
-            adj_map.append(row)
+        adj_map = copy.deepcopy(self.board)
 
         has_axe = False  #TODO  implement these
         num_dynamite = 0
@@ -854,7 +847,7 @@ class Agent(object):
 
     # write in function that clears agentlog at start of program
     def agentLog(self, string):
-        agentlog = open('agentlog.txt', 'a')
+        agentlog = open('agent.log', 'a+')
         agentlog.write(string+"\n")
         agentlog.close()
 
