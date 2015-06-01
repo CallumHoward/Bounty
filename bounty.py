@@ -180,7 +180,7 @@ class GameState(object):
         # update internal representation of the board
         self._storeView(agent_location, agent_rotation)
         self._nextTurn()
-        self.printBoard()
+        #self.printBoard()
 
     def _convertString2List(self, string):
         i = 0
