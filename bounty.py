@@ -138,15 +138,21 @@ class GameState(object):
         for i, row in enumerate(range(row_start, row_end)):
             for j, col in enumerate(range(col_start, col_end)):
                 self.board.board[row][col] = rotated_view[i][j]
-                if self.board.getLocation((row, col)) == self.FEATURES['gold']:
-                    self.setGoldLocation((row, col))
-                elif self.board.getLocation((row, col)) == self.FEATURES['axe']:
-                    self.setAxeLocation((row, col))
-                elif self.board.getLocation((row, col)) == self.FEATURES['dynamite']:
-                    self.setDynamiteLocation((row, col))
-                elif self.board.getLocation((row, col)) == self.FEATURES['boat']:
-                    self.setBoatLocation((row, col))
-                #print " location check in", self.board.getLocation((i, j))
+                #print "before location check in", self.board.getLocation((col, row))
+                if self.board.getLocation((col, row)) == GameState.FEATURES['gold'] and self.directory['gold'] == None:
+                    self.setGoldLocation((col, row))
+                elif self.board.getLocation((col, row)) == GameState.FEATURES['axe'] and self.directory['axe'] == None:
+                    self.setAxeLocation((col, row))
+                elif self.board.getLocation((col, row)) == GameState.FEATURES['dynamite']:
+                    if (col, row) not in self.directory['dynamite']:
+                        self.setDynamiteLocation((col, row))
+                elif self.board.getLocation((col, row)) == GameState.FEATURES['boat'] and self.directory['boat'] == None:
+                    self.setBoatLocation((col, row))
+                #print " location check in", self.board.getLocation((col, row))
+
+        if self.directory['dynamite']:
+            print "dynamite list is ", self.directory['dynamite']
+
 
     ### other methods
     def printBoard(self):
@@ -392,6 +398,7 @@ class Board(object):
             for row in path_map:
                 print ' '.join(row)
             print '...'
+            raw_input()
             time.sleep(0.05)  #TODO remove before submitting
 
         return list(reversed(path))
