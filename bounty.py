@@ -10,16 +10,15 @@ import sys
 from socket import error as SocketError
 from Queue import Queue
 #import time
-import random
-import copy
-from termcolor import colored  #TODO remove before submitting
+#import copy
+#from termcolor import colored  #TODO remove before submitting
 
 class GameState(object):
     'GameState class stores state of Bounty game'
 
     PORT = 31415
     MAX_MOVES = 10000
-    BOARD_DIM = 20#80  #TODO set to 80 before submitting
+    BOARD_DIM = 80
     BOARD_SIZE = BOARD_DIM * BOARD_DIM
     VIEW_DIM = 5
     VIEW_SIZE = VIEW_DIM * VIEW_DIM
@@ -411,13 +410,13 @@ class Board(object):
     # returns a list of cardinal directions
     def getShortestPath(self, origin, destination, has_axe, num_dynamite):
         path = []
-        markers = ['^', '>', 'v', '<']
+#        markers = ['^', '>', 'v', '<']
         max_path_length = GameState.BOARD_SIZE
         parent = self.bfs(origin, has_axe, num_dynamite)
         current = destination
 
         #DEBUG
-        path_map = copy.deepcopy(self.board)
+#        path_map = copy.deepcopy(self.board)
 
         loop_count = 0
         while current != origin and loop_count < max_path_length:
@@ -431,13 +430,13 @@ class Board(object):
             loop_count += 1
 
             #DEBUG
-            print path
-            for direction in path:
-                path_map[ current[1] ][ current[0] ] = colored(markers[direction], 'green')
-            for row in path_map:
-                print ' '.join(row)
-            #time.sleep(0.05)  #TODO remove before submitting
-        raw_input()
+#            print path
+#            for direction in path:
+#                path_map[ current[1] ][ current[0] ] = colored(markers[direction], 'green')
+#            for row in path_map:
+#                print ' '.join(row)
+#            #time.sleep(0.05)  #TODO remove before submitting
+#        raw_input()
 
         return list(reversed(path))
 
@@ -449,7 +448,7 @@ class Board(object):
         side_length = 2 * GameState.BOARD_DIM
         UNEXPLORED = (0, 0)
         #markers = ['^', '>', 'v', '<']
-        markers = ['v', '<', '^', '>']
+#        markers = ['v', '<', '^', '>']
         # contains the location that bfs came from, otherwise UNEXPLORED
         parent = []
         for i in range(side_length):
@@ -458,10 +457,9 @@ class Board(object):
                 row.append(UNEXPLORED)
             parent.append(row)
 
-        adj_map = copy.deepcopy(self.board)
+#        adj_map = copy.deepcopy(self.board)
 
-        #has_axe = False  #TODO  implement these
-        #num_dynamite = 0
+        #TODO implement dynamite
 
         while not frontier.empty():
             current = frontier.get()
@@ -469,13 +467,11 @@ class Board(object):
                 if parent[ adjacent[1] ][ adjacent[0] ] == UNEXPLORED:
                     frontier.put(adjacent)
                     parent[ adjacent[1] ][ adjacent[0] ] = current
-                    #print (adjacent[0], adjacent[1])
-                    #print self.directionAdjacent(current, adjacent)
-                    adj_map[ adjacent[1] ][ adjacent[0] ] = colored(markers[self.directionAdjacent(current, adjacent)], 'yellow')
-
-        for line in adj_map:
-            print ' '.join(line)
-        raw_input()
+#                    adj_map[ adjacent[1] ][ adjacent[0] ] = colored(markers[self.directionAdjacent(current, adjacent)], 'yellow')
+#
+#        for line in adj_map:
+#            print ' '.join(line)
+#        raw_input()
 
         return parent
 

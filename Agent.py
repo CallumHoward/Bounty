@@ -46,12 +46,14 @@ def dumbBot(agent):
 
 def smartBot(agent):
     if agent.getHasGold():
+        agent.agentLog('GOT GOLD')
         # follow shortest path back to starting point
         path = agent.state.board.getShortestPath(agent.location, agent.origin, agent.getHasAxe(), agent.getNumDynamite())
         agent.followPath(path)
 
     # if the location of gold is known
     if agent.state.getGoldLocation():
+        agent.agentLog('FOUND GOLD')
         # if path to the location can be found, follow path
         destination = agent.state.getGoldLocation()
         path = agent.state.board.getShortestPath(agent.location, destination, agent.getHasAxe(), agent.getNumDynamite())
@@ -60,7 +62,7 @@ def smartBot(agent):
     # if the location of axe is known
     if agent.state.getAxeLocation():
         agent.agentLog('FOUND AXE')
-        raw_input()
+#        raw_input()
         # if path to the location can be found, follow path
         destination = agent.state.getAxeLocation()
         path = agent.state.board.getShortestPath(agent.location, destination, agent.getHasAxe(), agent.getNumDynamite())
@@ -70,7 +72,7 @@ def smartBot(agent):
     if agent.state.getDynamiteLocations():
         agent.agentLog('COLLECTING EVERY DYNAMITE IN SIGHT')
         for dynamite in agent.state.getDynamiteLocations():
-            raw_input()
+#            raw_input()
             # if path to the location can be found, follow path
             path = agent.state.board.getShortestPath(agent.location, dynamite, agent.getHasAxe(), agent.getNumDynamite())
             agent.followPath(path)
@@ -79,7 +81,7 @@ def smartBot(agent):
     if agent.getHasAxe() and agent.state.getTreeLocations():
         agent.agentLog('CHOPPING EVERY TREE IN SIGHT')
         for tree in agent.state.getTreeLocations():
-            raw_input()
+#            raw_input()
             # if path to the location can be found, follow path
             path = agent.state.board.getShortestPath(agent.location, tree, agent.getHasAxe(), agent.getNumDynamite())
             agent.agentLog(path)
