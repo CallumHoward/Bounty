@@ -150,7 +150,7 @@ class GameState(object):
                     self.setBoatLocation((col, row))
                 #print " location check in", self.board.getLocation((col, row))
 
-        print "boat list is ", self.directory['boat']
+        print "gold is located: ", self.directory['gold']
 
 
     ### other methods
@@ -211,10 +211,17 @@ class GameState(object):
     def setGoldLocation(self, location):
         if self.directory['gold'] == None:
             self.directory['gold'] = location
+    
+    def setNoneGoldLocation(self):
+        self.directory['gold'] = None
+
 
     def setAxeLocation(self, location):
         if self.directory['axe'] == None:
             self.directory['axe'] = location
+
+    def setNoneAxeLocation(self):
+        self.directory['axe'] = None
 
     def setDynamiteLocation(self, location):
         self.directory['dynamite'].append(location)
@@ -619,12 +626,13 @@ class Agent(object):
             # update inventory if necessary, if we are facing and have moved forward, then we obtain
             if self.isFacingAxe():
                 self.setHasAxe()
+                self.state.setNoneAxeLocation()
             elif self.isFacingDynamite():
                 self.state.removeDynamiteFromList(self._getFacing())
                 self.gainDynamite()
             elif self.isFacingGold():
                 self.setHasGold()
-                self.setGoldLocation(self._getFacing())
+                self.state.setNoneGoldLocation()
             elif self.isFacingBoat():
                 self.state.setNoneBoatLocation()
                 self.setInBoat(True)
