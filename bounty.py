@@ -744,6 +744,15 @@ class Agent(object):
         self.rotation %= len(GameState.CARDINAL)
         self.state.sendMove(GameState.MOVES['right'], self.location, self.rotation)
 
+
+    def chopTree(self):
+        self.state.sendMove(GameState.MOVES['chop'], self.location, self.rotation)
+
+
+    def blastWall(self):
+        self.state.sendMove(GameState.MOVES['blast'], self.location, self.rotation)
+
+
     # location is a tuple of form (x, y)
     def getBoardLocation(self, location):
         return self.state.board.getLocation(location)
@@ -811,6 +820,7 @@ class Agent(object):
                 path = self.state.board.getShortestPath(self.location, tree, self.getHasAxe(), self.getNumDynamite())
                 self.agentLog(path)
                 self.followPath(path)
+                self.chopTree()
 
         self.dumbBot()
 
