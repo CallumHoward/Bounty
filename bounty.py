@@ -12,7 +12,7 @@ from Queue import Queue
 #import time
 import random
 import copy
-from termcolor import colored
+from termcolor import colored  #TODO remove before submitting
 
 class GameState(object):
     'GameState class stores state of Bounty game'
@@ -621,6 +621,9 @@ class Agent(object):
             return True
         if self.isFacingBoat():
             return True
+        if self.isFacingTree():
+            if self.getHasAxe():
+                return True
         if self.isInBoat():
             if self.isFacingWater():
                 return True
