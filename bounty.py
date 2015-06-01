@@ -159,7 +159,8 @@ class GameState(object):
 
     ### other methods
     def printBoard(self):
-        self.board.printBoard()
+#        self.board.printBoard()
+        pass
 
 
     def sendMove(self, move, agent_location, agent_rotation):
