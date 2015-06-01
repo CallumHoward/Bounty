@@ -777,7 +777,8 @@ class Agent(object):
         # if the location of gold is known
         if self.state.getGoldLocation():
             # if path to the location can be found, follow path
-            path = self.state.board.shortestPath(self.location, self.state.getGoldLocation())
+            destination = self.state.getGoldLocation()
+            path = self.state.board.shortestPath(self.location, destination)
             self.followPath(path)
 
         # if the location of axe is known
@@ -785,29 +786,35 @@ class Agent(object):
             print 'FOUND AXE'
             raw_input()
             # if path to the location can be found, follow path
-            path = self.state.board.shortestPath(self.location, self.state.getAxeLocation())
+            destination = self.state.getAxeLocation()
+            path = self.state.board.shortestPath(self.location, destination)
             self.followPath(path)
 
         # collect any dynamite that can be seen
         if self.state.getDynamiteLocations():
-            print 'LOOKING FOR DYNAMITE TO COLLECT'
-            raw_input()
+            print 'COLLECTING EVERY DYNAMITE IN SIGHT'
             for dynamite in self.state.getDynamiteLocations():
+                raw_input()
                 # if path to the location can be found, follow path
                 path = self.sate.board.shortestPath(self.location, dynamite)
                 self.followPath(path)
 
-
         # chop down all the trees
         if self.getHasAxe() and self.state.getTreeLocations():
-            print 'LOOKING FOR TREES TO CHOP'
-            raw_input()
+            print 'CHOPPING EVERY TREE IN SIGHT'
             for tree in self.state.getTreeLocations():
+                raw_input()
                 # if path to the location can be found, follow path
                 path = self.sate.board.shortestPath(self.location, tree)
                 self.followPath(path)
 
         self.dumbBot()
+
+    def exploreBot(self):
+        # bfs to nearest unexplored location
+        destination = self.state.board.getNearestUnexplored()
+        path = self.state.board.shortestPath(self.location, destination)
+        self.followPath(path)
 
 
     def userControl(self):
