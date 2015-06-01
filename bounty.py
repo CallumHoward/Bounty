@@ -774,8 +774,10 @@ class Agent(object):
 
         # if the location of axe is known
         if self.state.getAxeLocation():
+            print 'FOUND AXE'
+            raw_input()
             # if path to the location can be found, follow path
-            path = self.state.board.shortestPath(self.location, self.state.getGoldLocation())
+            path = self.state.board.shortestPath(self.location, self.state.getAxeLocation())
             if path:
                 self.followPath(path)
             else:
