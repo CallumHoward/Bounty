@@ -410,8 +410,13 @@ class Board(object):
         while current != origin and loop_count < max_path_length:
             prev = current
             current = parent[ current[1] ][ current[0] ]
+
+            # if no path can be found return empty list
+            if current == (0, 0):
+                return []
             path.append(self.directionAdjacent(current, prev))
             loop_count += 1
+
             #DEBUG
             print path
             for direction in path:
@@ -419,7 +424,7 @@ class Board(object):
             for row in path_map:
                 print ' '.join(row)
             print '...'
-            raw_input()
+            #raw_input()
             time.sleep(0.05)  #TODO remove before submitting
 
         return list(reversed(path))
@@ -757,16 +762,26 @@ class Agent(object):
     def smartBot(self):
         if self.getHasGold():
             # follow shortest path back to starting point
+            print 'LOOKING FOR PATH'
             path = self.state.board.shortestPath(self.location, self.origin)
-            self.followPath(path)
+            print 'FINISHED LOOKING'
+            if path:
+                print 'FOUND PATH'
+                self.followPath(path)
+            else:
+                print 'COULD NOT FIND PATH'
+                self.dumbBot()
 
         # if the location of gold is known
         elif self.getGoldLocation():
             print 'FOUND GOLD', self.getGoldLocation()
-            raw_input()
+            #raw_input()
             # if path to the location can be found, follow path
             path = self.state.board.shortestPath(self.location, self.getGoldLocation())
-            self.followPath(path)
+            if path:
+                self.followPath(path)
+            else:
+                self.dumbBot()
 
         else:
             self.dumbBot()
