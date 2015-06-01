@@ -330,7 +330,7 @@ class Board(object):
         for coordinate in all_adjacent:
             if self.isLand(coordinate):
                 land_adjacent.append(coordinate)
-            elif self.isTree(coordinate) and has_axe:
+            elif self.isTree(coordinate) and self.getHasAxe():
                 land_adjacent.append(coordinate)
             elif self.isWall(coordinate) and num_dynamite > 0:
                 land_adjacent.append(coordinate)
