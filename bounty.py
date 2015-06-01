@@ -573,7 +573,6 @@ class Agent(object):
             target = self.state.board.getDown(self.location)
         else: #(self.rotation == GameState.CARDINAL['west'])
             target = self.state.board.getLeft(self.location)
-        #self.agentLog(str(target))
         return target
 
 
@@ -809,6 +808,7 @@ class Agent(object):
                 raw_input()
                 # if path to the location can be found, follow path
                 path = self.state.board.getShortestPath(self.location, tree)
+                self.agentLog(path)
                 self.followPath(path)
 
         self.dumbBot()
@@ -854,9 +854,10 @@ class Agent(object):
 
     # write in function that clears agentlog at start of program
     def agentLog(self, string):
-        agentlog = open('agent.log', 'a+')
-        agentlog.write(string+"\n")
-        agentlog.close()
+        if Agent.LOG_ENABLED:
+            agentlog = open('agent.log', 'a+')
+            agentlog.write(str(string)+"\n")
+            agentlog.close()
 
 
 
