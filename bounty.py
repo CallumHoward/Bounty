@@ -156,8 +156,6 @@ class GameState(object):
                     if self.directory['boat'] == None:
                         self.setBoatLocation((col, row))
                 #print " location check in", self.board.getLocation((col, row))
-                
-        print "gold is located: ", self.directory['gold']
 
 
     ### other methods
@@ -754,7 +752,7 @@ class Agent(object):
     ### behaviour methods
     def makeBestMove(self):
         self.smartBot()
-        print 'FACING: |' + self.state.board.getLocation(self._getFacing()) + '|', '\t', self._getFacing()
+        #print 'FACING: |' + self.state.board.getLocation(self._getFacing()) + '|', '\t', self._getFacing()
         #time.sleep(0.05) #TODO remove before submitting
         #print '..'
         #raw_input()
@@ -788,7 +786,7 @@ class Agent(object):
 
         # if the location of axe is known
         if self.state.getAxeLocation():
-            print 'FOUND AXE'
+            self.agentLog('FOUND AXE')
             raw_input()
             # if path to the location can be found, follow path
             destination = self.state.getAxeLocation()
@@ -797,7 +795,7 @@ class Agent(object):
 
         # collect any dynamite that can be seen
         if self.state.getDynamiteLocations():
-            print 'COLLECTING EVERY DYNAMITE IN SIGHT'
+            self.agentLog('COLLECTING EVERY DYNAMITE IN SIGHT')
             for dynamite in self.state.getDynamiteLocations():
                 raw_input()
                 # if path to the location can be found, follow path
@@ -806,7 +804,7 @@ class Agent(object):
 
         # chop down all the trees
         if self.getHasAxe() and self.state.getTreeLocations():
-            print 'CHOPPING EVERY TREE IN SIGHT'
+            self.agentLog('CHOPPING EVERY TREE IN SIGHT')
             for tree in self.state.getTreeLocations():
                 raw_input()
                 # if path to the location can be found, follow path
@@ -857,7 +855,7 @@ class Agent(object):
     # write in function that clears agentlog at start of program
     def agentLog(self, string):
         agentlog = open('agentlog.txt', 'a')
-        agentlog.write(string+"\n")   
+        agentlog.write(string+"\n")
         agentlog.close()
 
 
