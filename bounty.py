@@ -12,7 +12,7 @@ from Queue import Queue
 import time
 import random
 import copy
-
+import os
 
 class GameState(object):
     'GameState class stores state of Bounty game'
@@ -106,7 +106,7 @@ class GameState(object):
 
     ### setters
     def _nextTurn(self):
-        if self.turn_num <= GameState.MAX_MOVES:
+        if self.turn_num < GameState.MAX_MOVES:
             self.turn_num += 1
         else:
             print 'Game Lost.'
@@ -153,7 +153,7 @@ class GameState(object):
                 elif self.board.getLocation((col, row)) == GameState.FEATURES['boat'] and self.directory['boat'] == None:
                     self.setBoatLocation((col, row))
                 #print " location check in", self.board.getLocation((col, row))
-
+                
         print "gold is located: ", self.directory['gold']
 
 
@@ -506,6 +506,7 @@ class Agent(object):
     'Agent class for agent of Bounty Game'
 
     INIT_ROTATION = 0  #change this
+    LOG_ENABLED = True
 
     def __init__(self):
         self.state = GameState()
@@ -571,6 +572,7 @@ class Agent(object):
             target = self.state.board.getDown(self.location)
         else: #(self.rotation == GameState.CARDINAL['west'])
             target = self.state.board.getLeft(self.location)
+        #self.agentLog(str(target))
         return target
 
 
@@ -832,5 +834,12 @@ class Agent(object):
         else:
             print 'can\'t move!'
             exit()
+
+    # write in function that clears agentlog at start of program
+    def agentLog(self, string):
+        agentlog = open('agentlog.txt', 'a')
+        agentlog.write(string+"\n")   
+        agentlog.close()
+
 
 

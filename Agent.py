@@ -2,6 +2,7 @@
 
 import bounty
 import sys
+import os
 #import time
 
 def main():
@@ -15,13 +16,15 @@ def main():
         print "Usage: Agent -p <portnumber>"
         return
 
+    os.remove("agentlog.txt") 
+
     #TODO - pass the port to the agent class
     agent = bounty.Agent()
     agent.state.printBoard()
 
     while agent.state.getTurn() <= bounty.GameState.MAX_MOVES:
-        agent.makeBestMove()
-        #agent.userControl()
+        #agent.makeBestMove()
+        agent.userControl()
 
 # call main function only if not imported as a module
 if __name__ == '__main__':
