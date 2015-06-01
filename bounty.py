@@ -150,8 +150,7 @@ class GameState(object):
                     self.setBoatLocation((col, row))
                 #print " location check in", self.board.getLocation((col, row))
 
-        if self.directory['dynamite']:
-            print "dynamite list is ", self.directory['dynamite']
+        print "boat list is ", self.directory['boat']
 
 
     ### other methods
@@ -627,8 +626,10 @@ class Agent(object):
                 self.setHasGold()
                 self.setGoldLocation(self._getFacing())
             elif self.isFacingBoat():
+                self.state.setNoneBoatLocation()
                 self.setInBoat(True)
             elif self.isInBoat() and self.isFacingLand():
+                self.state.setBoatLocation(self.location)
                 self.setInBoat(False)
 
             # note: GameState.sendMove() will update internal representation of the board
