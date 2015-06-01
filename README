@@ -45,12 +45,20 @@
 # ------------
 # This class aggregates the GameState class and then makes movement decisions based on the
 # current game state before sending its move choice to the server. Uses breadth-first search to
-# explore the map and get as much information as possible, before devising a path to the gold. Once
-# the agent obtains the gold, it uses a shortest-path algorithm to get back to its starting location.
+# explore the map and get as much information as possible. If it finds the location of the gold
+# it devises the shortest path to the gold. Once the agent obtains the gold, it uses a shortest-path
+# algorithm to get back to its starting location.
 #
-# If the agent fails to find a path to the gold, it will randomly wander the map while hacking up
-# trees and blowing up walls at random until it can make a more informed decision.
-
+# If the agent fails to find a path to the gold or does not know the location of the gold, it finds the
+# location of the axe. It then finds the shortest path to the axe, picks it up, then calculates all the 
+# shortest paths to every known tree and cuts them down. It then explores any unexplored areas if they are
+# unobstructed. If a path to the gold still can't be found, it will revert to the "dumbBot" strategy where
+# it randomly wanders the map while blowing up random walls when possible. The behavioural methods
+# representing these strategies are stored in Agent.py, while all gamestate methods are stored in
+# bounty.py.
+#
+# Our agent also stores a log of all its behaviours in a file called agent.log
+#
 ####
 
 
