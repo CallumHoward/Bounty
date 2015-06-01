@@ -10,8 +10,8 @@ import sys
 from socket import error as SocketError
 from Queue import Queue
 #import time
-#import copy
-#from termcolor import colored  #TODO remove before submitting
+import copy
+from termcolor import colored  #TODO remove before submitting
 
 class GameState(object):
     'GameState class stores state of Bounty game'
@@ -441,6 +441,44 @@ class Board(object):
         return list(reversed(path))
 
 
+    def getNearestUnexplored(self, origin, has_axe, num_dynamite):
+        frontier = Queue()
+        frontier.put(origin)
+        side_length = 2 * GameState.BOARD_DIM
+        UNEXPLORED = (0, 0)
+        #markers = ['^', '>', 'v', '<']
+        markers = ['v', '<', '^', '>']
+        # contains the location that bfs came from, otherwise UNEXPLORED
+        parent = []
+        for i in range(side_length):
+            row = []
+            for j in range(side_length):
+                row.append(UNEXPLORED)
+            parent.append(row)
+
+        adj_map = copy.deepcopy(self.board)
+
+        #num_dynamite = 0 #TODO  implement this
+
+        while not frontier.empty():
+            current = frontier.get()
+
+            if self.getLocation(current) == GameState.FEATURES['fog']:
+                return current
+
+            for adjacent in self.getAdjOnLand(current, has_axe, num_dynamite):  #TODO implement water
+                if parent[ adjacent[1] ][ adjacent[0] ] == UNEXPLORED:
+                    frontier.put(adjacent)
+                    parent[ adjacent[1] ][ adjacent[0] ] = current
+                    adj_map[ adjacent[1] ][ adjacent[0] ] = colored(markers[self.directionAdjacent(current, adjacent)], 'blue')
+
+        for line in adj_map:
+            print ' '.join(line)
+        raw_input()
+
+        return None
+
+
     # Breadth First Search on what has been seen in internal representation of board
     def bfs(self, origin, has_axe, num_dynamite):
         frontier = Queue()
@@ -474,6 +512,44 @@ class Board(object):
 #        raw_input()
 
         return parent
+
+
+    def getNearestUnexplored(self, origin, has_axe, num_dynamite):
+        frontier = Queue()
+        frontier.put(origin)
+        side_length = 2 * GameState.BOARD_DIM
+        UNEXPLORED = (0, 0)
+        #markers = ['^', '>', 'v', '<']
+        markers = ['v', '<', '^', '>']
+        # contains the location that bfs came from, otherwise UNEXPLORED
+        parent = []
+        for i in range(side_length):
+            row = []
+            for j in range(side_length):
+                row.append(UNEXPLORED)
+            parent.append(row)
+
+        adj_map = copy.deepcopy(self.board)
+
+        #TODO implement dynamite
+
+        while not frontier.empty():
+            current = frontier.get()
+
+            if self.getLocation(current) == GameState.FEATURES['fog']:
+                return current
+
+            for adjacent in self.getAdjOnLand(current, has_axe, num_dynamite):  #TODO implement water
+                if parent[ adjacent[1] ][ adjacent[0] ] == UNEXPLORED:
+                    frontier.put(adjacent)
+                    parent[ adjacent[1] ][ adjacent[0] ] = current
+                    adj_map[ adjacent[1] ][ adjacent[0] ] = colored(markers[self.directionAdjacent(current, adjacent)], 'blue')
+
+        for line in adj_map:
+            print ' '.join(line)
+        raw_input()
+
+        return None
 
 
     def printBoard(self):
