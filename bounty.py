@@ -9,10 +9,10 @@ import socket
 import sys
 from socket import error as SocketError
 from Queue import Queue
-import time
+#import time
 import random
 import copy
-#import os
+from termcolor import colored
 
 class GameState(object):
     'GameState class stores state of Bounty game'
@@ -433,12 +433,11 @@ class Board(object):
             #DEBUG
             print path
             for direction in path:
-                path_map[ current[1] ][ current[0] ] = markers[direction]
+                path_map[ current[1] ][ current[0] ] = colored(markers[direction], 'green')
             for row in path_map:
                 print ' '.join(row)
-            print '...'
-            #raw_input()
-            time.sleep(0.05)  #TODO remove before submitting
+            #time.sleep(0.05)  #TODO remove before submitting
+        raw_input()
 
         return list(reversed(path))
 
@@ -472,10 +471,11 @@ class Board(object):
                     parent[ adjacent[1] ][ adjacent[0] ] = current
                     #print (adjacent[0], adjacent[1])
                     #print self.directionAdjacent(current, adjacent)
-                    adj_map[ adjacent[1] ][ adjacent[0] ] = markers[self.directionAdjacent(current, adjacent)]
+                    adj_map[ adjacent[1] ][ adjacent[0] ] = colored(markers[self.directionAdjacent(current, adjacent)], 'yellow')
 
         for line in adj_map:
             print ' '.join(line)
+        raw_input()
 
         return parent
 
@@ -514,8 +514,6 @@ class Agent(object):
         self.has_gold = False
 
         # clear log file
-        #if os.path.isfile('agent.log'):
-        #    os.remove('agent.log')
         self.agentLog('\n--------\n')
 
 
@@ -855,9 +853,9 @@ class Agent(object):
     # write in function that clears agentlog at start of program
     def agentLog(self, string):
         if Agent.LOG_ENABLED:
-            agentlog = open('agent.log', 'a+')
-            agentlog.write(str(string)+"\n")
-            agentlog.close()
+            with open('agent.log', 'a+') as agentlog:
+                agentlog = open('agent.log', 'a+')
+                agentlog.write(str(string)+"\n")
 
 
 
