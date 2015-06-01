@@ -11,6 +11,8 @@ from socket import error as SocketError
 from Queue import Queue
 import time
 import random
+import copy
+
 
 class GameState(object):
     'GameState class stores state of Bounty game'
@@ -136,14 +138,15 @@ class GameState(object):
         for i, row in enumerate(range(row_start, row_end)):
             for j, col in enumerate(range(col_start, col_end)):
                 self.board.board[row][col] = rotated_view[i][j]
-                if self.board.getLocation((i,j)) == self.FEATURES['gold']:
+                if self.board.getLocation((row, col)) == self.FEATURES['gold']:
                     self.setGoldLocation((row, col))
-                elif self.board.getLocation((i,j)) == self.FEATURES['axe']:
+                elif self.board.getLocation((row, col)) == self.FEATURES['axe']:
                     self.setAxeLocation((row, col))
-                elif self.board.getLocation((i,j)) == self.FEATURES['dynamite']:
+                elif self.board.getLocation((row, col)) == self.FEATURES['dynamite']:
                     self.setDynamiteLocation((row, col))
-                elif self.board.getLocation((i,j)) == self.FEATURES['boat']:
+                elif self.board.getLocation((row, col)) == self.FEATURES['boat']:
                     self.setBoatLocation((row, col))
+                #print " location check in", self.board.getLocation((i, j))
 
     ### other methods
     def printBoard(self):
@@ -201,11 +204,11 @@ class GameState(object):
             j+=1
 
     def setGoldLocation(self, location):
-        if self.directory['gold'] != None:
+        if self.directory['gold'] == None:
             self.directory['gold'] = location
 
     def setAxeLocation(self, location):
-        if self.directory['axe'] != None:
+        if self.directory['axe'] == None:
             self.directory['axe'] = location
 
     def setDynamiteLocation(self, location):
@@ -215,7 +218,7 @@ class GameState(object):
         self.directory['boat'] = None
 
     def setBoatLocation(self, location):
-        if self.directory['boat'] != None:
+        if self.directory['boat'] == None:
             self.directory['boat'] = location
 
 class Board(object):
@@ -369,7 +372,7 @@ class Board(object):
         current = destination
 
         #DEBUG
-        path_map = list(self.board)
+        path_map = copy.deepcopy(self.board)
         #for i in range(side_length):
         #    row = []
         #    for j in range(side_length):
