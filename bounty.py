@@ -211,7 +211,7 @@ class GameState(object):
     def setGoldLocation(self, location):
         if self.directory['gold'] == None:
             self.directory['gold'] = location
-    
+
     def setNoneGoldLocation(self):
         self.directory['gold'] = None
 
@@ -510,11 +510,6 @@ class Agent(object):
         return self.has_gold
 
 
-    def getGoldLocation(self):
-        return self.state.directory['gold']
-
-
-
     ### setters
     # Pass in True or False to set the value of isInBoat
     def setInBoat(self, value):
@@ -750,29 +745,32 @@ class Agent(object):
     def smartBot(self):
         if self.getHasGold():
             # follow shortest path back to starting point
-            print 'LOOKING FOR PATH'
             path = self.state.board.shortestPath(self.location, self.origin)
-            print 'FINISHED LOOKING'
             if path:
-                print 'FOUND PATH'
                 self.followPath(path)
             else:
-                print 'COULD NOT FIND PATH'
                 self.dumbBot()
 
         # if the location of gold is known
-        elif self.getGoldLocation():
-            print 'FOUND GOLD', self.getGoldLocation()
-            #raw_input()
+        if self.state.getGoldLocation():
             # if path to the location can be found, follow path
-            path = self.state.board.shortestPath(self.location, self.getGoldLocation())
+            path = self.state.board.shortestPath(self.location, self.state.getGoldLocation())
             if path:
                 self.followPath(path)
             else:
                 self.dumbBot()
 
-        else:
-            self.dumbBot()
+        # if the location of axe is known
+        if self.state.getAxeLocation():
+            # if path to the location can be found, follow path
+            path = self.state.board.shortestPath(self.location, self.state.getGoldLocation())
+            if path:
+                self.followPath(path)
+            else:
+                self.dumbBot()
+
+
+        self.dumbBot()
 
 
     def userControl(self):
