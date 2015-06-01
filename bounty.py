@@ -227,6 +227,9 @@ class GameState(object):
         if self.directory['boat'] == None:
             self.directory['boat'] = location
 
+    def removeDynamiteFromList(self, location):
+        self.directory['dynamite'].remove(location)
+
 class Board(object):
     'Board class for internal representation of game board'
 
@@ -618,6 +621,7 @@ class Agent(object):
             if self.isFacingAxe():
                 self.setHasAxe()
             elif self.isFacingDynamite():
+                self.state.removeDynamiteFromList(self._getFacing())
                 self.gainDynamite()
             elif self.isFacingGold():
                 self.setHasGold()
