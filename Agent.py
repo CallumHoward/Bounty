@@ -1,5 +1,70 @@
 #!/usr/bin/python
 
+# Documentation for COMP3411
+# Chris Phibbs (z3460482) and Callum Howard (z3419451)
+
+# We decided to use Python for this assignment due to our familiarity
+# with the language and due to its easy readability and power
+
+# The main design
+# idea from the start was to have our agent create inside of itself its
+# own representation of the board displaying all the areas it had seen, so
+# that it could make an informed decision based off this information and then
+# create paths to wherever it needed to go.
+
+# To achieve this, we split the program into 3 classes: GameState, Agent and Board.
+
+# Board Class:
+# ------------
+# The board class stores the internal representation of the board that our agent
+# would keep track of as he explores the board itself. To represent this we used
+# a two-dimensional list, which allowed us to use a coordinate system to keep
+# track of objects on the map easily. This was much better than our earlier ideas of
+# a string, 1-dimensional list and a hash, as each of these options in our opinion
+# made it harder to keep track of positions/objects on the map. This allowed us to
+# keep track of board positions with tuples.
+#
+# Storing the board this way made it easy to find adjacent objects to particular
+# board coordinates and such, as well as pathfinding. We therefore included all methods
+# related to object finding and path finding in this class.
+#
+# We initialise the board to be 160x160 squares. By starting our mapping in the middle of this
+# 160x160 board, we ensure that regardless of our orientation/starting position on the real map,
+# we will be able to accurately represent it in our own agent's version - since the real board
+# can be no bigger than 80x80 squares.
+
+# GameState Class:
+# ----------------
+# This class stores all information on the current game state. It aggregates the board
+# class to keep track of the game board, as well as storing boolean variables denoting
+# whether objects such as the axe, dynamite, gold etc. had been picked up, as well as whether
+# the agent is in a boat. All constants are also stored in this class, as well as a dictionary of
+# strings representing elements of the board and different player moves to improve code readability.
+# e.g. FEATURES['water'] will print the character for water, and so forth. Socket code is also stored
+# in this class, as the current board state is based off the information given by the server.
+
+# Agent Class:
+# ------------
+# This class aggregates the GameState class and then makes movement decisions based on the
+# current game state before sending its move choice to the server. Uses breadth-first search to
+# explore the map and get as much information as possible. If it finds the location of the gold
+# it devises the shortest path to the gold. Once the agent obtains the gold, it uses a shortest-path
+# algorithm to get back to its starting location.
+#
+# If the agent fails to find a path to the gold or does not know the location of the gold, it finds the
+# location of the axe. It then finds the shortest path to the axe, picks it up, then calculates all the
+# shortest paths to every known tree and cuts them down. It then explores any unexplored areas if they are
+# unobstructed. If a path to the gold still can't be found, it will revert to the "dumbBot" strategy where
+# it randomly wanders the map while blowing up random walls when possible. The behavioural methods
+# representing these strategies are stored in Agent.py, while all gamestate methods are stored in
+# bounty.py.
+#
+# Our agent also stores a log of all its behaviours in a file called agent.log
+#
+####
+
+
+
 import bounty
 import sys
 #import time
