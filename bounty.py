@@ -69,7 +69,8 @@ class GameState(object):
             'gold':     None,
             'boat':     None,
             'dynamite': [],
-            'axe':      None
+            'axe':      None,
+            'tree':     []
         }
 
         # Establishes TCPIP connection on localhost at specified port
@@ -146,6 +147,9 @@ class GameState(object):
                 elif self.board.getLocation((col, row)) == GameState.FEATURES['dynamite']:
                     if (col, row) not in self.directory['dynamite']:
                         self.setDynamiteLocation((col, row))
+                elif self.board.getLocation((col, row)) == GameState.FEATURES['tree']:
+                    if (col, row) not in self.directory['tree']:
+                        self.setTreeLocation((col, row))
                 elif self.board.getLocation((col, row)) == GameState.FEATURES['boat'] and self.directory['boat'] == None:
                     self.setBoatLocation((col, row))
                 #print " location check in", self.board.getLocation((col, row))
@@ -247,6 +251,15 @@ class GameState(object):
 
     def getBoatLocation(self):
         return self.directory['boat']
+
+    def setTreeLocation(self, location):
+        self.directory['tree'].append(location)
+
+    def getTreeLocations(self):
+        return self.directory['tree']
+
+    def removeTreeFromList(self, location):
+        self.directory['tree'].remove(location)
 
 class Board(object):
     'Board class for internal representation of game board'
@@ -708,6 +721,7 @@ class Agent(object):
 
     def removeTree(self):
         if self.canRemoveTree():
+            self.state.removeTreeFromList(self._getFacing())
             self.state.sendMove(GameState.MOVES['chop'], self.location, self.rotation)
 
 
