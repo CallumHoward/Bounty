@@ -621,9 +621,6 @@ class Agent(object):
             return True
         if self.isFacingBoat():
             return True
-        if self.isFacingTree():
-            if self.getHasAxe():
-                return True
         if self.isInBoat():
             if self.isFacingWater():
                 return True
@@ -743,14 +740,6 @@ class Agent(object):
         self.rotation += GameState.DIRECTIONS['right']
         self.rotation %= len(GameState.CARDINAL)
         self.state.sendMove(GameState.MOVES['right'], self.location, self.rotation)
-
-
-    def chopTree(self):
-        self.state.sendMove(GameState.MOVES['chop'], self.location, self.rotation)
-
-
-    def blastWall(self):
-        self.state.sendMove(GameState.MOVES['blast'], self.location, self.rotation)
 
 
     # location is a tuple of form (x, y)
