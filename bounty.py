@@ -12,7 +12,7 @@ from Queue import Queue
 import time
 import random
 import copy
-import os
+#import os
 
 class GameState(object):
     'GameState class stores state of Bounty game'
@@ -267,12 +267,11 @@ class Board(object):
 
     START_LOCATION = (GameState.BOARD_DIM, GameState.BOARD_DIM)
 
-    # clear log file
-    os.remove("agent.log")
 
     def __init__(self):
         # make internal board twice as big to guarantee enough space
         side_length = 2 * GameState.BOARD_DIM
+
         # board is a list of lists initialised to fog
         self.board = []
         for i in range(side_length):
@@ -280,6 +279,7 @@ class Board(object):
             for j in range(side_length):
                 row.append(GameState.FEATURES['fog'])
             self.board.append(row)
+
 
     # location is a tuple of form (x, y)
     # returns coordinate above
@@ -305,6 +305,7 @@ class Board(object):
     # returns the contents of the location
     def getLocation(self, location):
         return self.board[location[1]][location[0]]
+
 
     # returns adjacent locations that are in the map
     def getAdjacent(self, location):
@@ -511,6 +512,12 @@ class Agent(object):
         self.num_dynamite = 0
         self.has_axe = False
         self.has_gold = False
+
+        # clear log file
+        #if os.path.isfile('agent.log'):
+        #    os.remove('agent.log')
+        self.agentLog('\n--------\n')
+
 
 
     ### getters
@@ -792,7 +799,7 @@ class Agent(object):
             for dynamite in self.state.getDynamiteLocations():
                 raw_input()
                 # if path to the location can be found, follow path
-                path = self.sate.board.getShortestPath(self.location, dynamite)
+                path = self.state.board.getShortestPath(self.location, dynamite)
                 self.followPath(path)
 
         # chop down all the trees
@@ -801,7 +808,7 @@ class Agent(object):
             for tree in self.state.getTreeLocations():
                 raw_input()
                 # if path to the location can be found, follow path
-                path = self.sate.board.getShortestPath(self.location, tree)
+                path = self.state.board.getShortestPath(self.location, tree)
                 self.followPath(path)
 
         self.dumbBot()
