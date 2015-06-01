@@ -9,7 +9,7 @@ import socket
 import sys
 from socket import error as SocketError
 from Queue import Queue
-#import time
+import time
 import random
 
 class GameState(object):
@@ -17,7 +17,7 @@ class GameState(object):
 
     PORT = 31415
     MAX_MOVES = 10000
-    BOARD_DIM = 35#80  #TODO set to 80 before submitting
+    BOARD_DIM = 20#80  #TODO set to 80 before submitting
     BOARD_SIZE = BOARD_DIM * BOARD_DIM
     VIEW_DIM = 5
     VIEW_SIZE = VIEW_DIM * VIEW_DIM
@@ -67,7 +67,7 @@ class GameState(object):
             'gold':     None,
             'boat':     None,
             'dynamite': [],
-            'axe':      None        
+            'axe':      None
         }
 
         # Establishes TCPIP connection on localhost at specified port
@@ -139,7 +139,7 @@ class GameState(object):
                 if self.board.getLocation((i,j)) == self.FEATURES['gold']:
                     self.setGoldLocation((row, col))
                 elif self.board.getLocation((i,j)) == self.FEATURES['axe']:
-                    self.setAxeLocation((row, col))   
+                    self.setAxeLocation((row, col))
                 elif self.board.getLocation((i,j)) == self.FEATURES['dynamite']:
                     self.setDynamiteLocation((row, col))
                 elif self.board.getLocation((i,j)) == self.FEATURES['boat']:
@@ -389,7 +389,7 @@ class Board(object):
             for row in path_map:
                 print ' '.join(row)
             print '...'
-            raw_input()
+            time.sleep(0.05)  #TODO remove before submitting
 
         return list(reversed(path))
 
@@ -666,6 +666,10 @@ class Agent(object):
             self.moveLeft()
 
 
+    def followPath(self, path):
+        for direction in path:
+            self.followDirection(direction)
+
 
     def removeTree(self):
         if self.canRemoveTree():
@@ -693,7 +697,7 @@ class Agent(object):
         return self.state.board.getLocation(location)
 
 
-    ### other methods
+    ### behaviour methods
     def makeBestMove(self):
         self.smartBot()
         print 'FACING: |' + self.state.board.getLocation(self._getFacing()) + '|', '\t', self._getFacing()
@@ -719,8 +723,16 @@ class Agent(object):
         if self.getHasGold():
             # follow shortest path back to starting point
             path = self.state.board.shortestPath(self.location, self.origin)
-            for direction in path:
-                self.followDirection(direction)
+            self.followPath(path)
+
+        # if the location of gold is known
+        elif self.getGoldLocation():
+            print 'FOUND GOLD', self.getGoldLocation()
+            raw_input()
+            # if path to the location can be found, follow path
+            path = self.state.board.shortestPath(self.location, self.getGoldLocation())
+            self.followPath(path)
+
         else:
             self.dumbBot()
 
