@@ -140,18 +140,21 @@ class GameState(object):
             for j, col in enumerate(range(col_start, col_end)):
                 self.board.board[row][col] = rotated_view[i][j]
                 #print "before location check in", self.board.getLocation((col, row))
-                if self.board.getLocation((col, row)) == GameState.FEATURES['gold'] and self.directory['gold'] == None:
-                    self.setGoldLocation((col, row))
-                elif self.board.getLocation((col, row)) == GameState.FEATURES['axe'] and self.directory['axe'] == None:
-                    self.setAxeLocation((col, row))
+                if self.board.getLocation((col, row)) == GameState.FEATURES['gold']:
+                    if self.directory['gold'] == None:
+                        self.setGoldLocation((col, row))
+                elif self.board.getLocation((col, row)) == GameState.FEATURES['axe']:
+                    if self.directory['axe'] == None:
+                        self.setAxeLocation((col, row))
                 elif self.board.getLocation((col, row)) == GameState.FEATURES['dynamite']:
                     if (col, row) not in self.directory['dynamite']:
                         self.setDynamiteLocation((col, row))
                 elif self.board.getLocation((col, row)) == GameState.FEATURES['tree']:
                     if (col, row) not in self.directory['tree']:
                         self.setTreeLocation((col, row))
-                elif self.board.getLocation((col, row)) == GameState.FEATURES['boat'] and self.directory['boat'] == None:
-                    self.setBoatLocation((col, row))
+                elif self.board.getLocation((col, row)) == GameState.FEATURES['boat']:
+                    if self.directory['boat'] == None:
+                        self.setBoatLocation((col, row))
                 #print " location check in", self.board.getLocation((col, row))
 
         print "gold is located: ", self.directory['gold']
@@ -404,7 +407,7 @@ class Board(object):
 
 
     # returns a list of cardinal directions
-    def shortestPath(self, origin, destination):
+    def getShortestPath(self, origin, destination):
         path = []
         markers = ['^', '>', 'v', '<']
         max_path_length = GameState.BOARD_SIZE
@@ -771,14 +774,14 @@ class Agent(object):
     def smartBot(self):
         if self.getHasGold():
             # follow shortest path back to starting point
-            path = self.state.board.shortestPath(self.location, self.origin)
+            path = self.state.board.getShortestPath(self.location, self.origin)
             self.followPath(path)
 
         # if the location of gold is known
         if self.state.getGoldLocation():
             # if path to the location can be found, follow path
             destination = self.state.getGoldLocation()
-            path = self.state.board.shortestPath(self.location, destination)
+            path = self.state.board.getShortestPath(self.location, destination)
             self.followPath(path)
 
         # if the location of axe is known
@@ -787,7 +790,7 @@ class Agent(object):
             raw_input()
             # if path to the location can be found, follow path
             destination = self.state.getAxeLocation()
-            path = self.state.board.shortestPath(self.location, destination)
+            path = self.state.board.getShortestPath(self.location, destination)
             self.followPath(path)
 
         # collect any dynamite that can be seen
@@ -796,7 +799,7 @@ class Agent(object):
             for dynamite in self.state.getDynamiteLocations():
                 raw_input()
                 # if path to the location can be found, follow path
-                path = self.sate.board.shortestPath(self.location, dynamite)
+                path = self.sate.board.getShortestPath(self.location, dynamite)
                 self.followPath(path)
 
         # chop down all the trees
@@ -805,7 +808,7 @@ class Agent(object):
             for tree in self.state.getTreeLocations():
                 raw_input()
                 # if path to the location can be found, follow path
-                path = self.sate.board.shortestPath(self.location, tree)
+                path = self.sate.board.getShortestPath(self.location, tree)
                 self.followPath(path)
 
         self.dumbBot()
@@ -813,7 +816,7 @@ class Agent(object):
     def exploreBot(self):
         # bfs to nearest unexplored location
         destination = self.state.board.getNearestUnexplored()
-        path = self.state.board.shortestPath(self.location, destination)
+        path = self.state.board.getShortestPath(self.location, destination)
         self.followPath(path)
 
 
@@ -832,7 +835,7 @@ class Agent(object):
             destination = self.state.board.getUp(self.location)
             destination = self.state.board.getUp(destination)
             destination = self.state.board.getLeft(destination)
-            self.state.board.shortestPath(self.location, destination)
+            self.state.board.getShortestPath(self.location, destination)
         elif input == 'b':
             self.removeWall()
         elif input == 'c':
