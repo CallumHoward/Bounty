@@ -236,6 +236,18 @@ class GameState(object):
     def removeDynamiteFromList(self, location):
         self.directory['dynamite'].remove(location)
 
+    def getGoldLocation(self):
+        return self.directory['gold']
+
+    def getAxeLocation(self):
+        return self.directory['axe']
+
+    def getDynamiteLocations(self):
+        return self.directory['dynamite']
+
+    def getBoatLocation(self):
+        return self.directory['boat']
+
 class Board(object):
     'Board class for internal representation of game board'
 
