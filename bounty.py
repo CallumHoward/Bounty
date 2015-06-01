@@ -774,19 +774,13 @@ class Agent(object):
         if self.getHasGold():
             # follow shortest path back to starting point
             path = self.state.board.shortestPath(self.location, self.origin)
-            if path:
-                self.followPath(path)
-            else:
-                self.dumbBot()
+            self.followPath(path)
 
         # if the location of gold is known
         if self.state.getGoldLocation():
             # if path to the location can be found, follow path
             path = self.state.board.shortestPath(self.location, self.state.getGoldLocation())
-            if path:
-                self.followPath(path)
-            else:
-                self.dumbBot()
+            self.followPath(path)
 
         # if the location of axe is known
         if self.state.getAxeLocation():
@@ -794,11 +788,26 @@ class Agent(object):
             raw_input()
             # if path to the location can be found, follow path
             path = self.state.board.shortestPath(self.location, self.state.getAxeLocation())
-            if path:
-                self.followPath(path)
-            else:
-                self.dumbBot()
+            self.followPath(path)
 
+        # collect any dynamite that can be seen
+        if self.state.getDynamiteLocations():
+            print 'LOOKING FOR DYNAMITE TO COLLECT'
+            raw_input()
+            for dynamite in self.state.getDynamiteLocations():
+                # if path to the location can be found, follow path
+                path = self.sate.board.shortestPath(self.location, dynamite)
+                self.followPath(path)
+
+
+        # chop down all the trees
+        if self.getHasAxe() and self.state.getTreeLocations():
+            print 'LOOKING FOR TREES TO CHOP'
+            raw_input()
+            for tree in self.state.getTreeLocations():
+                # if path to the location can be found, follow path
+                path = self.sate.board.shortestPath(self.location, tree)
+                self.followPath(path)
 
         self.dumbBot()
 
