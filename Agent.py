@@ -151,7 +151,7 @@ def smartBot(agent):
             path = agent.state.board.getShortestPath(agent.location, tree, agent.getHasAxe(), agent.getNumDynamite())
             agent.agentLog(path)
             agent.followPath(path)
-            agent.chopTree()
+            agent.removeTree()
 
     dumbBot(agent)
 
