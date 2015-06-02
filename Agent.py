@@ -102,7 +102,7 @@ def dumbBot(agent):
         agent.removeTree()
     elif agent.canRemoveWall() and not random.randint(-1, 20):
         agent.agentLog('BLASTING WALL')
-        raw_input()
+        #raw_input()
         agent.removeWall()
     elif agent.canMoveForward() and random.randint(-1,3):
         agent.moveForward()
@@ -116,17 +116,20 @@ def dumbBot(agent):
 
 def smartBot(agent):
     if agent.getHasGold():
-        agent.agentLog('GOT GOLD')
+        agent.agentLog('GOT GOLD, RETURNING TO START')
         # follow shortest path back to starting point
         path = agent.state.board.getShortestPath(agent.location, agent.origin, agent.getHasAxe(), agent.getNumDynamite())
         agent.followPath(path)
 
     # if the location of gold is known
     if agent.state.getGoldLocation():
-        agent.agentLog('FOUND GOLD')
         # if path to the location can be found, follow path
         destination = agent.state.getGoldLocation()
         path = agent.state.board.getShortestPath(agent.location, destination, agent.getHasAxe(), agent.getNumDynamite())
+        if path:
+            agent.agentLog('FOUND GOLD')
+        else:
+            agent.agentLog('FOUND GOLD, BUT CAN\'T GET TO IT')
         agent.followPath(path)
 
     # if the location of axe is known
@@ -164,10 +167,12 @@ def smartBot(agent):
 
 def exploreBot(agent):
     # bfs to nearest unexplored location
-    destination = agent.state.board.getNearestUnexplored()
+    destination = agent.state.board.getNearestUnexplored(agent.location, agent.getHasAxe(), agent.getNumDynamite())
+    agent.agentLog('TRYING TO EXPLORE')
     if destination:
         agent.agentLog('EXPLORING')
-        path = agent.state.board.getShortestPath(agent.location, destination, agent.getHasAxe(), agent.getNumDynamite())
+        path = agent.state.board.getShortestExplorationPath(agent.location, destination, agent.getHasAxe(), agent.getNumDynamite())
+        agent.agentLog(path)
         agent.followPath(path)
     else:
         dumbBot(agent)

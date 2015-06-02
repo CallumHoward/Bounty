@@ -495,7 +495,7 @@ class Board(object):
             loop_count += 1
 
             #DEBUG
-            print path
+            #print path
             for direction in path:
                 path_map[ current[1] ][ current[0] ] = colored(markers[direction], 'cyan', 'on_grey')
 #            for row in path_map:
