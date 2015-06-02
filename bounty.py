@@ -158,8 +158,8 @@ class GameState(object):
 
 
     ### other methods
-    def printBoard(self, overlay=[]):
-        self.board.printBoard(overlay)
+    def printBoard(self):
+        self.board.printBoard()
         pass
         #time.sleep(0.05)
         #raw_input()
@@ -179,7 +179,7 @@ class GameState(object):
                     break
                 received_data += data_stream
             i = 0
-            markers = ['^', '>', 'v', '<']
+            markers = [u'\u25B2', u'\u25B6', u'\u25BC', u'\u25C0']
             received_data = received_data[:12] + markers[agent_rotation] + received_data[12:]
             agent_view = ""
             while (i < GameState.VIEW_SIZE):
@@ -443,7 +443,7 @@ class Board(object):
         current = destination
 
         #DEBUG
-        path_map = copy.deepcopy(self.board)
+        path_map = copy.deepcopy(self.overlay) #bfs must be called before here
 
         loop_count = 0
         while current != origin and loop_count < max_path_length:
@@ -460,10 +460,13 @@ class Board(object):
             #print path
             for direction in path:
                 path_map[ current[1] ][ current[0] ] = colored(markers[direction], 'green', 'on_grey')
-            self.printBoard(path_map)
+            self.overlay = path_map
+            self.printBoard()
+            #self.printBoard(path_map)
 #            for row in path_map:
 #                print ' '.join(row)
-            time.sleep(0.05)  #TODO remove before submitting
+            #time.sleep(0.02)  #TODO remove before submitting
+        self.overlay = self.board
         time.sleep(0.5)  #TODO remove before submitting
         #raw_input()
 
@@ -497,7 +500,9 @@ class Board(object):
                 path_map[ current[1] ][ current[0] ] = colored(markers[direction], 'cyan', 'on_grey')
 #            for row in path_map:
 #                print ' '.join(row)
-            self.printBoard(path_map)
+            self.overlay = path_map
+            self.printBoard()
+            #self.printBoard(path_map)
 #            time.sleep(0.2)  #TODO remove before submitting
         raw_input()
 
@@ -532,7 +537,8 @@ class Board(object):
                     parent[ adjacent[1] ][ adjacent[0] ] = current
                     adj_map[ adjacent[1] ][ adjacent[0] ] = colored(markers[self.directionAdjacent(current, adjacent)], 'blue', 'on_grey')
 
-        self.printBoard(adj_map)
+        self.overlay = adj_map
+        #self.printBoard(adj_map)
 #        for line in adj_map:
 #            print ' '.join(line)
 #        raw_input()
@@ -581,11 +587,11 @@ class Board(object):
         return None
 
 
-    def printBoard(self, overlay=[]):
-        markers = ['v', '<', '^', '>']
+    def printBoard(self):
+        markers = [u'\u25B2', u'\u25B6', u'\u25BC', u'\u25C0']
         buff_out = []
-        if overlay:
-            map_out = overlay
+        if self.overlay:
+            map_out = self.overlay
         else:
             map_out = self.board
         for i in map_out:
@@ -611,7 +617,7 @@ class Board(object):
                 buff_out.extend('')
             buff_out.extend('\n')
         print ''.join(buff_out)
-        time.sleep(0.01)
+        time.sleep(0.05)
 
 
     def directionAdjacent(self, current_location, adjacent):
@@ -804,32 +810,40 @@ class Agent(object):
 
 
     def moveUp(self):
-        #TODO can optimise steps taken
         while self.rotation != GameState.CARDINAL['north']:
-            self.turnLeft()
+            if self.rotation == GameState.CARDINAL['west']:
+                self.turnRight()
+            else:
+                self.turnLeft()
         self.moveForward()
 
 
     def moveRight(self):
-        #TODO can optimise steps taken
         while self.rotation != GameState.CARDINAL['east']:
-            self.turnLeft()
+            if self.rotation == GameState.CARDINAL['north']:
+                self.turnRight()
+            else:
+                self.turnLeft()
         if self.canMoveForward():
             self.moveForward()
 
 
     def moveDown(self):
-        #TODO can optimise steps taken
         while self.rotation != GameState.CARDINAL['south']:
-            self.turnLeft()
+            if self.rotation == GameState.CARDINAL['east']:
+                self.turnRight()
+            else:
+                self.turnLeft()
         if self.canMoveForward():
             self.moveForward()
 
 
     def moveLeft(self):
-        #TODO can optimise steps taken
         while self.rotation != GameState.CARDINAL['west']:
-            self.turnLeft()
+            if self.rotation == GameState.CARDINAL['south']:
+                self.turnRight()
+            else:
+                self.turnLeft()
         if self.canMoveForward():
             self.moveForward()
 
