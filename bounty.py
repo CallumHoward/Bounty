@@ -9,7 +9,7 @@ import socket
 import sys
 from socket import error as SocketError
 from Queue import Queue
-#import time
+import time
 import copy
 from termcolor import colored  #TODO remove before submitting
 
@@ -18,7 +18,7 @@ class GameState(object):
 
     PORT = 31415
     MAX_MOVES = 10000
-    BOARD_DIM = 80
+    BOARD_DIM = 25
     BOARD_SIZE = BOARD_DIM * BOARD_DIM
     VIEW_DIM = 5
     VIEW_SIZE = VIEW_DIM * VIEW_DIM
@@ -159,8 +159,10 @@ class GameState(object):
 
     ### other methods
     def printBoard(self):
-#        self.board.printBoard()
+        self.board.printBoard()
         pass
+        #time.sleep(0.05)
+        #raw_input()
 
 
     def sendMove(self, move, agent_location, agent_rotation):
@@ -344,6 +346,29 @@ class Board(object):
         return land_adjacent
 
 
+    def getAdjAndUnexplored(self, location, has_axe, num_dynamite):
+        land_adjacent = []
+        all_adjacent = self.getAdjacent(location)
+        for coordinate in all_adjacent:
+            if self.isLand(coordinate):
+                land_adjacent.append(coordinate)
+            elif self.isTree(coordinate) and has_axe:
+                land_adjacent.append(coordinate)
+            elif self.isWall(coordinate) and num_dynamite > 0:
+                land_adjacent.append(coordinate)
+            elif self.isAxe(coordinate):
+                land_adjacent.append(coordinate)
+            elif self.isDynamite(coordinate):
+                land_adjacent.append(coordinate)
+            elif self.isGold(coordinate):
+                land_adjacent.append(coordinate)
+            elif self.isBoat(coordinate):
+                land_adjacent.append(coordinate)
+            elif self.isFog(coordinate):
+                land_adjacent.append(coordinate)
+        return land_adjacent
+
+
     def getAdjOnWater(self, location, has_axe, num_dynamite):
         water_adjacent = []
         all_adjacent = self.getAdjacent(location)
@@ -410,13 +435,13 @@ class Board(object):
     # returns a list of cardinal directions
     def getShortestPath(self, origin, destination, has_axe, num_dynamite):
         path = []
-#        markers = ['^', '>', 'v', '<']
+        markers = ['^', '>', 'v', '<']
         max_path_length = GameState.BOARD_SIZE
         parent = self.bfs(origin, has_axe, num_dynamite)
         current = destination
 
         #DEBUG
-#        path_map = copy.deepcopy(self.board)
+        path_map = copy.deepcopy(self.board)
 
         loop_count = 0
         while current != origin and loop_count < max_path_length:
@@ -430,18 +455,52 @@ class Board(object):
             loop_count += 1
 
             #DEBUG
-#            print path
-#            for direction in path:
-#                path_map[ current[1] ][ current[0] ] = colored(markers[direction], 'green')
-#            for row in path_map:
-#                print ' '.join(row)
-#            #time.sleep(0.05)  #TODO remove before submitting
-#        raw_input()
+            print path
+            for direction in path:
+                path_map[ current[1] ][ current[0] ] = colored(markers[direction], 'green')
+            for row in path_map:
+                print ' '.join(row)
+            #time.sleep(0.05)  #TODO remove before submitting
+        #raw_input()
 
         return list(reversed(path))
 
 
-    def getNearestUnexplored(self, origin, has_axe, num_dynamite):
+    def getShortestExplorationPath(self, origin, destination, has_axe, num_dynamite):
+        path = []
+        markers = ['^', '>', 'v', '<']
+        max_path_length = GameState.BOARD_SIZE
+        parent = self.bfs(origin, has_axe, num_dynamite)
+        current = destination
+
+        #DEBUG
+        path_map = copy.deepcopy(self.board)
+
+        loop_count = 0
+        while current != origin and loop_count < max_path_length:
+            prev = current
+            current = parent[ current[1] ][ current[0] ]
+
+            # if no path can be found return empty list
+            if current == (0, 0):
+                return []
+            path.append(self.directionAdjacent(current, prev))
+            loop_count += 1
+
+            #DEBUG
+            print path
+            for direction in path:
+                path_map[ current[1] ][ current[0] ] = colored(markers[direction], 'green')
+            for row in path_map:
+                print ' '.join(row)
+            time.sleep(0.05)  #TODO remove before submitting
+        #raw_input()
+
+        return list(reversed(path))
+
+
+    # Breadth First Search on what has been seen in internal representation of board
+    def bfs(self, origin, has_axe, num_dynamite):
         frontier = Queue()
         frontier.put(origin)
         side_length = 2 * GameState.BOARD_DIM
@@ -458,45 +517,6 @@ class Board(object):
 
         adj_map = copy.deepcopy(self.board)
 
-        #num_dynamite = 0 #TODO  implement this
-
-        while not frontier.empty():
-            current = frontier.get()
-
-            if self.getLocation(current) == GameState.FEATURES['fog']:
-                return current
-
-            for adjacent in self.getAdjOnLand(current, has_axe, num_dynamite):  #TODO implement water
-                if parent[ adjacent[1] ][ adjacent[0] ] == UNEXPLORED:
-                    frontier.put(adjacent)
-                    parent[ adjacent[1] ][ adjacent[0] ] = current
-                    adj_map[ adjacent[1] ][ adjacent[0] ] = colored(markers[self.directionAdjacent(current, adjacent)], 'blue')
-
-        for line in adj_map:
-            print ' '.join(line)
-        raw_input()
-
-        return None
-
-
-    # Breadth First Search on what has been seen in internal representation of board
-    def bfs(self, origin, has_axe, num_dynamite):
-        frontier = Queue()
-        frontier.put(origin)
-        side_length = 2 * GameState.BOARD_DIM
-        UNEXPLORED = (0, 0)
-        #markers = ['^', '>', 'v', '<']
-#        markers = ['v', '<', '^', '>']
-        # contains the location that bfs came from, otherwise UNEXPLORED
-        parent = []
-        for i in range(side_length):
-            row = []
-            for j in range(side_length):
-                row.append(UNEXPLORED)
-            parent.append(row)
-
-#        adj_map = copy.deepcopy(self.board)
-
         #TODO implement dynamite
 
         while not frontier.empty():
@@ -505,10 +525,10 @@ class Board(object):
                 if parent[ adjacent[1] ][ adjacent[0] ] == UNEXPLORED:
                     frontier.put(adjacent)
                     parent[ adjacent[1] ][ adjacent[0] ] = current
-#                    adj_map[ adjacent[1] ][ adjacent[0] ] = colored(markers[self.directionAdjacent(current, adjacent)], 'yellow')
-#
-#        for line in adj_map:
-#            print ' '.join(line)
+                    adj_map[ adjacent[1] ][ adjacent[0] ] = colored(markers[self.directionAdjacent(current, adjacent)], 'yellow')
+
+        for line in adj_map:
+            print ' '.join(line)
 #        raw_input()
 
         return parent
@@ -537,24 +557,36 @@ class Board(object):
             current = frontier.get()
 
             if self.getLocation(current) == GameState.FEATURES['fog']:
+                print 'CURRENT LOCATION: |' + self.getLocation(current) + '|'
+                #raw_input()
                 return current
 
-            for adjacent in self.getAdjOnLand(current, has_axe, num_dynamite):  #TODO implement water
+            for adjacent in self.getAdjAndUnexplored(current, has_axe, num_dynamite):  #TODO implement water
                 if parent[ adjacent[1] ][ adjacent[0] ] == UNEXPLORED:
                     frontier.put(adjacent)
                     parent[ adjacent[1] ][ adjacent[0] ] = current
                     adj_map[ adjacent[1] ][ adjacent[0] ] = colored(markers[self.directionAdjacent(current, adjacent)], 'blue')
 
-        for line in adj_map:
-            print ' '.join(line)
-        raw_input()
+            for line in adj_map:
+                print ' '.join(line)
+            print 'CURRENT LOCATION: |' + self.getLocation(current) + '|'
+            #raw_input()
 
         return None
 
 
     def printBoard(self):
+        markers = ['v', '<', '^', '>']
         for i in self.board:
-            print ' '.join(i)
+            for j in i:
+                if j in markers:
+                    print colored(j, 'red'),
+                elif j == GameState.FEATURES['fog']:
+                    print colored(j, 'magenta'),
+                else:
+                    print j,
+            print
+            #print ' '.join(i)
 
 
     def directionAdjacent(self, current_location, adjacent):
