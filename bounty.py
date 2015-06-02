@@ -18,7 +18,7 @@ class GameState(object):
 
     PORT = 31415
     MAX_MOVES = 10000
-    BOARD_DIM = 25
+    BOARD_DIM = 30
     BOARD_SIZE = BOARD_DIM * BOARD_DIM
     VIEW_DIM = 5
     VIEW_SIZE = VIEW_DIM * VIEW_DIM
@@ -158,8 +158,8 @@ class GameState(object):
 
 
     ### other methods
-    def printBoard(self):
-        self.board.printBoard()
+    def printBoard(self, overlay=[]):
+        self.board.printBoard(overlay)
         pass
         #time.sleep(0.05)
         #raw_input()
@@ -280,6 +280,8 @@ class Board(object):
             for j in range(side_length):
                 row.append(GameState.FEATURES['fog'])
             self.board.append(row)
+
+        self.overlay = []
 
 
     # location is a tuple of form (x, y)
@@ -455,12 +457,14 @@ class Board(object):
             loop_count += 1
 
             #DEBUG
-            print path
+            #print path
             for direction in path:
-                path_map[ current[1] ][ current[0] ] = colored(markers[direction], 'green')
-            for row in path_map:
-                print ' '.join(row)
-            #time.sleep(0.05)  #TODO remove before submitting
+                path_map[ current[1] ][ current[0] ] = colored(markers[direction], 'green', 'on_grey')
+            self.printBoard(path_map)
+#            for row in path_map:
+#                print ' '.join(row)
+            time.sleep(0.05)  #TODO remove before submitting
+        time.sleep(0.5)  #TODO remove before submitting
         #raw_input()
 
         return list(reversed(path))
@@ -490,11 +494,12 @@ class Board(object):
             #DEBUG
             print path
             for direction in path:
-                path_map[ current[1] ][ current[0] ] = colored(markers[direction], 'green')
-            for row in path_map:
-                print ' '.join(row)
-            time.sleep(0.05)  #TODO remove before submitting
-        #raw_input()
+                path_map[ current[1] ][ current[0] ] = colored(markers[direction], 'cyan', 'on_grey')
+#            for row in path_map:
+#                print ' '.join(row)
+            self.printBoard(path_map)
+#            time.sleep(0.2)  #TODO remove before submitting
+        raw_input()
 
         return list(reversed(path))
 
@@ -525,10 +530,11 @@ class Board(object):
                 if parent[ adjacent[1] ][ adjacent[0] ] == UNEXPLORED:
                     frontier.put(adjacent)
                     parent[ adjacent[1] ][ adjacent[0] ] = current
-                    adj_map[ adjacent[1] ][ adjacent[0] ] = colored(markers[self.directionAdjacent(current, adjacent)], 'yellow')
+                    adj_map[ adjacent[1] ][ adjacent[0] ] = colored(markers[self.directionAdjacent(current, adjacent)], 'blue', 'on_grey')
 
-        for line in adj_map:
-            print ' '.join(line)
+        self.printBoard(adj_map)
+#        for line in adj_map:
+#            print ' '.join(line)
 #        raw_input()
 
         return parent
@@ -575,18 +581,37 @@ class Board(object):
         return None
 
 
-    def printBoard(self):
+    def printBoard(self, overlay=[]):
         markers = ['v', '<', '^', '>']
-        for i in self.board:
+        buff_out = []
+        if overlay:
+            map_out = overlay
+        else:
+            map_out = self.board
+        for i in map_out:
             for j in i:
                 if j in markers:
-                    print colored(j, 'red'),
+                    buff_out.extend(colored(j, 'red'))
                 elif j == GameState.FEATURES['fog']:
-                    print colored(j, 'magenta'),
+                    buff_out.extend(' ')
+                elif j == GameState.FEATURES['water']:
+                    buff_out.extend(colored(j, 'cyan', 'on_blue'))
+                elif j == GameState.FEATURES['tree']:
+                    buff_out.extend(colored(j, 'green', 'on_grey'))
+                elif j == GameState.FEATURES['wall']:
+                    buff_out.extend(colored(j, 'magenta', 'on_grey'))
+                elif j == GameState.FEATURES['land']:
+                    buff_out.extend(colored(' ', 'white', 'on_grey'))
+                elif j == GameState.FEATURES['boat']:
+                    buff_out.extend(colored(j, 'white', 'on_blue'))
+                elif j == GameState.FEATURES['gold']:
+                    buff_out.extend(colored(j, 'yellow', 'on_grey'))
                 else:
-                    print j,
-            print
-            #print ' '.join(i)
+                    buff_out.extend(j)
+                buff_out.extend('')
+            buff_out.extend('\n')
+        print ''.join(buff_out)
+        time.sleep(0.01)
 
 
     def directionAdjacent(self, current_location, adjacent):
